@@ -13,15 +13,15 @@ const router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
-    path: '/student',
+    path: '/student/dashboard',
     element: <StudentDashboard />,
   },
   {
-    path: '/teacher',
+    path: '/teacher/dashboard',
     element: <TeacherDashboard />,
   },
   {
-    path: '/admin',
+    path: '/admin/dashboard',
     element: <AdminDashboard />,
   },
 ]);

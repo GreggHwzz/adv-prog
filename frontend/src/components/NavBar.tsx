@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom"; // Ajout pour navigation dynamique
 import { FaBell } from "react-icons/fa"; // Icône pour la cloche de notification
 import { HiChevronDown } from "react-icons/hi"; // Icône pour le menu déroulant
 
@@ -10,32 +11,49 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ role }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const location = useLocation(); // Récupère l'URL actuelle
 
   // Liens spécifiques en fonction du rôle
-  const getNavLinks = () => {
-    switch (role) {
-      case "ADMIN":
-        return [
-          { label: "Tableau de bord", href: "/dashboard" },
-          { label: "Gestion des utilisateurs", href: "/users" },
-          { label: "Formulaires", href: "/forms" },
-          { label: "Analytics", href: "/analytics" },
-          { label: "Configuration", href: "/settings" },
-        ];
-      case "TEACHER":
-        return [
-          { label: "Tableau de bord", href: "/dashboard" },
-          { label: "Évaluations", href: "/evaluations" },
-          { label: "Mes statistiques", href: "/stats" },
-        ];
-      case "STUDENT":
-        return [
-          { label: "Tableau de bord", href: "/dashboard" },
-          { label: "Historique", href: "/history" },
-        ];
-      default:
-        return [];
-    }
+  const getNavLinks = (role: "ADMIN" | "TEACHER" | "STUDENT") => {
+    // Définir la base de l'URL en fonction du rôle
+    const baseUrl = (() => {
+      switch (role) {
+        case "ADMIN":
+          return "/admin";
+        case "TEACHER":
+          return "/teacher";
+        case "STUDENT":
+          return "/student";
+        default:
+          return "/";
+      }
+    })();
+  
+    // Définir les chemins relatifs
+    const links = {
+      ADMIN: [
+        { label: "Tableau de bord", href: "/dashboard" },
+        { label: "Gestion des utilisateurs", href: "/users" },
+        { label: "Formulaires", href: "/forms" },
+        { label: "Analytics", href: "/analytics" },
+        { label: "Configuration", href: "/settings" },
+      ],
+      TEACHER: [
+        { label: "Tableau de bord", href: "/dashboard" },
+        { label: "Évaluations", href: "/evaluations" },
+        { label: "Mes statistiques", href: "/stats" },
+      ],
+      STUDENT: [
+        { label: "Tableau de bord", href: "/dashboard" },
+        { label: "Historique", href: "/history" },
+      ],
+    };
+  
+    // Retourner les liens avec la base de l'URL ajoutée
+    return (links[role] || []).map((link) => ({
+      ...link,
+      href: `${baseUrl}${link.href}`, // Combiner la base URL avec le chemin
+    }));
   };
 
   return (
@@ -48,14 +66,20 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
 
         {/* Navigation links */}
         <nav className="hidden md:flex space-x-6">
-          {getNavLinks().map((link) => (
-            <a
+          {getNavLinks(role).map((link) => (
+            <NavLink
               key={link.label}
-              href={link.href}
-              className="hover:text-gray-300"
+              to={link.href}
+              className={({ isActive }) =>
+                `${
+                  location.pathname === link.href
+                    ? "bg-white text-[#2F1893] p-3 rounded-xl px-4" // Active style
+                    : "text-gray-200 p-3 rounded-xl px-4 hover:bg-[#1E0E62]"
+                }`
+              }
             >
               {link.label}
-            </a>
+            </NavLink>
           ))}
         </nav>
 
@@ -70,16 +94,18 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
           {/* User Dropdown */}
           <div className="relative">
             <button
-              className="flex items-center space-x-2 bg-[#1E0E62] rounded-xl p-3"
+              className="flex items-center space-x-2 bg-[#1E0E62] rounded-3xl w-44 h-12"
               onClick={() => setDropdownOpen(!isDropdownOpen)}
             >
-              <span>{role === "ADMIN"
+              <span
+                className="ml-4"
+              >{role === "ADMIN"
                   ? "Administrateur"
                   : role === "TEACHER"
                   ? "Professeur"
                   : "Élève"}
               </span>
-              <HiChevronDown className="w-4 h-4" />
+              <HiChevronDown className="w-4 h-4 right-3"/>
             </button>
 
             {/* Dropdown Menu */}

@@ -11,10 +11,9 @@ const [role, setRole] = useState<'ADMIN' | 'TEACHER' | 'STUDENT' | null>(null);
 
   const handleLogin = async (userRole: 'ADMIN' | 'TEACHER' | 'STUDENT') => {
     try {
-      // Simule la connexion de l'utilisateur avec un rôle
       const user = { id: '1', email: 'test@example.com', role: userRole, name: 'Test User' };
       if (user) {
-        navigate(`/${userRole.toLowerCase()}`);
+        navigate(`/${userRole.toLowerCase()}/dashboard`);
       }
     } catch (error) {
       console.error(error);
