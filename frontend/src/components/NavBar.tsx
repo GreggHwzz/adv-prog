@@ -4,6 +4,7 @@ import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom"; // Ajout pour navigation dynamique
 import { FaBell } from "react-icons/fa"; // Icône pour la cloche de notification
 import { HiChevronDown } from "react-icons/hi"; // Icône pour le menu déroulant
+import Notifications from "./Notifications";
 
 interface NavbarProps {
   role: "ADMIN" | "TEACHER" | "STUDENT"; // Définition des rôles possibles
@@ -73,8 +74,8 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
               className={({ isActive }) =>
                 `${
                   location.pathname === link.href
-                    ? "bg-white text-[#2F1893] p-3 rounded-xl px-4" // Active style
-                    : "text-gray-200 p-3 rounded-xl px-4 hover:bg-[#1E0E62]"
+                    ? "bg-white text-[#2F1893] py-1 rounded-xl px-4" // Active style
+                    : "text-gray-200 rounded-xl py-1 px-4 hover:bg-[#1E0E62]"
                 }`
               }
             >
@@ -86,26 +87,21 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
         {/* Notifications and User Menu */}
         <div className="flex items-center space-x-4">
           {/* Notification Icon */}
-          <button className="relative">
-            <FaBell className="w-5 h-5 text-white hover:text-gray-300" />
-            <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border border-white"></span>
-          </button>
+          <Notifications />
 
           {/* User Dropdown */}
           <div className="relative">
             <button
-              className="flex items-center space-x-2 bg-[#1E0E62] rounded-3xl w-44 h-12"
+              className="flex items-center justify-between bg-[#1E0E62] rounded-3xl w-44 h-12 px-4"
               onClick={() => setDropdownOpen(!isDropdownOpen)}
             >
-              <span
-                className="ml-4"
-              >{role === "ADMIN"
+              <span>{role === "ADMIN"
                   ? "Administrateur"
                   : role === "TEACHER"
                   ? "Professeur"
                   : "Élève"}
               </span>
-              <HiChevronDown className="w-4 h-4 right-3"/>
+              <HiChevronDown className="w-4 h-4"/>
             </button>
 
             {/* Dropdown Menu */}
