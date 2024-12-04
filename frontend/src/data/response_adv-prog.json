@@ -1,0 +1,167 @@
+{
+    "courseId": 1,
+    "courseTitle" : "Advanced Programming",
+    "responses": [
+      {
+        "student": {
+          "id": 101,
+          "name": "Alice Dupont"
+        },
+        "answers": [
+          {
+            "questionId": 1,
+            "questionText": "Le professeur explique-t-il clairement les concepts ?",
+            "response": {
+              "rating": 4,
+              "comment": "Les explications sont claires, mais parfois trop rapides."
+            }
+          },
+          {
+            "questionId": 2,
+            "questionText": "Le professeur répond-il efficacement aux questions ?",
+            "response": {
+              "rating": 5,
+              "comment": "Les réponses sont toujours complètes et bien détaillées."
+            }
+          },
+          {
+            "questionId": 3,
+            "questionText": "Le cours était-il intéressant et engageant ?",
+            "response": {
+              "rating": 3,
+              "comment": "Le contenu est intéressant, mais le rythme pourrait être amélioré."
+            }
+          }
+        ]
+      },
+      {
+        "student": {
+          "id": 102,
+          "name": "Bob Martin"
+        },
+        "answers": [
+          {
+            "questionId": 1,
+            "questionText": "Le professeur explique-t-il clairement les concepts ?",
+            "response": {
+              "rating": 5,
+              "comment": ""
+            }
+          },
+          {
+            "questionId": 2,
+            "questionText": "Le professeur répond-il efficacement aux questions ?",
+            "response": {
+              "rating": 4,
+              "comment": "Répond bien, mais parfois un peu trop concis."
+            }
+          },
+          {
+            "questionId": 3,
+            "questionText": "Le cours était-il intéressant et engageant ?",
+            "response": {
+              "rating": 4,
+              "comment": "Le cours est très engageant grâce aux exemples concrets."
+            }
+          }
+        ]
+      },
+      {
+        "student": {
+          "id": 103,
+          "name": "Clara Sanchez"
+        },
+        "answers": [
+          {
+            "questionId": 1,
+            "questionText": "Le professeur explique-t-il clairement les concepts ?",
+            "response": {
+              "rating": 3,
+              "comment": "Les concepts sont clairs, mais manquent d'illustrations."
+            }
+          },
+          {
+            "questionId": 2,
+            "questionText": "Le professeur répond-il efficacement aux questions ?",
+            "response": {
+              "rating": 5,
+              "comment": "Réponses précises et adaptées à chaque cas."
+            }
+          },
+          {
+            "questionId": 3,
+            "questionText": "Le cours était-il intéressant et engageant ?",
+            "response": {
+              "rating": 2,
+              "comment": "Le sujet était un peu difficile à suivre."
+            }
+          }
+        ]
+      },
+      {
+        "student": {
+          "id": 104,
+          "name": "David Laurent"
+        },
+        "answers": [
+          {
+            "questionId": 1,
+            "questionText": "Le professeur explique-t-il clairement les concepts ?",
+            "response": {
+              "rating": 4,
+              "comment": "Bon équilibre entre théorie et pratique."
+            }
+          },
+          {
+            "questionId": 2,
+            "questionText": "Le professeur répond-il efficacement aux questions ?",
+            "response": {
+              "rating": 3,
+              "comment": "Les réponses sont utiles, mais il manque de détails."
+            }
+          },
+          {
+            "questionId": 3,
+            "questionText": "Le cours était-il intéressant et engageant ?",
+            "response": {
+              "rating": 5,
+              "comment": "Cours passionnant et motivant."
+            }
+          }
+        ]
+      },
+      {
+        "student": {
+          "id": 105,
+          "name": "Émilie Rousseau"
+        },
+        "answers": [
+          {
+            "questionId": 1,
+            "questionText": "Le professeur explique-t-il clairement les concepts ?",
+            "response": {
+              "rating": 5,
+              "comment": "Les explications sont exemplaires."
+            }
+          },
+          {
+            "questionId": 2,
+            "questionText": "Le professeur répond-il efficacement aux questions ?",
+            "response": {
+              "rating": 4,
+              "comment": "Les réponses sont claires, mais il faudrait plus de temps pour discuter."
+            }
+          },
+          {
+            "questionId": 3,
+            "questionText": "Le cours était-il intéressant et engageant ?",
+            "response": {
+              "rating": 3,
+              "comment": "Bon contenu, mais un peu trop théorique."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  

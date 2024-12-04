@@ -1,0 +1,63 @@
+[
+    {
+      "id": 1,
+      "courseCode": "ST2APR",
+      "courseTitle": "Advanced Programming",
+      "professors": ["M. Martin", "Mme. Garcia"],
+      "deadline": "2024-12-15",
+      "questions": [
+        {
+          "id": 1,
+          "text": "Le professeur explique-t-il clairement les concepts ?",
+          "type": "rating",
+          "scale": [1, 2, 3, 4, 5],
+          "optionalComment": "Pourquoi avez-vous choisi cette note ? (Facultatif)"
+        },
+        {
+          "id": 2,
+          "text": "Le professeur répond-il efficacement aux questions ?",
+          "type": "rating",
+          "scale": [1, 2, 3, 4, 5],
+          "optionalComment": "Comment le professeur pourrait-il améliorer ses réponses ? (Facultatif)"
+        },
+        {
+          "id": 3,
+          "text": "Le cours était-il intéressant et engageant ?",
+          "type": "rating",
+          "scale": [1, 2, 3, 4, 5],
+          "optionalComment": "Qu'est-ce qui a rendu le cours intéressant ou ennuyeux ? (Facultatif)"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "courseCode": "ST2DCE",
+      "courseTitle": "DevOps and Continuous Deployment",
+      "professors": ["M. Huitre", "M. Sanchez"],
+      "deadline": "2024-12-20",
+      "questions": [
+        {
+          "id": 1,
+          "text": "Le professeur a-t-il couvert tous les sujets annoncés ?",
+          "type": "rating",
+          "scale": [1, 2, 3, 4, 5],
+          "optionalComment": "Quels sujets ont été bien ou mal abordés ? (Facultatif)"
+        },
+        {
+          "id": 2,
+          "text": "Le professeur a-t-il proposé des exemples concrets pour expliquer les concepts ?",
+          "type": "rating",
+          "scale": [1, 2, 3, 4, 5],
+          "optionalComment": "Quels exemples ont été utiles ou manquants ? (Facultatif)"
+        },
+        {
+          "id": 3,
+          "text": "Globalement, êtes-vous satisfait du cours ?",
+          "type": "rating",
+          "scale": [1, 2, 3, 4, 5],
+          "optionalComment": "Quels éléments du cours vous ont particulièrement plu ou déplu ? (Facultatif)"
+        }
+      ]
+    }
+  ]
+  
