@@ -59,4 +59,4 @@ export function useAuth() {
     signOut,
     signUp,
   };
-}*/
+}
