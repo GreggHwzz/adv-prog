@@ -77,7 +77,7 @@ const Notifications = () => {
               </ul>
             ) : (
               <p className="text-center text-sm text-gray-300 p-4">
-                Il n'y a plus de nouvelles notifications
+                Il n&apos;y a plus de nouvelles notifications
               </p>
             )}
           </div>
