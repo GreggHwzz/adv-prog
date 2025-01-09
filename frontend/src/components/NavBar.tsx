@@ -1,22 +1,21 @@
-"use client";
-
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom"; // Ajout pour navigation dynamique
-import { FaBell } from "react-icons/fa"; // Icône pour la cloche de notification
-import { HiChevronDown } from "react-icons/hi"; // Icône pour le menu déroulant
+import { usePathname, useRouter } from 'next/navigation'; // Importer usePathname
+import Link from "next/link";
+import { HiChevronDown } from "react-icons/hi";
 import Notifications from "./Notifications";
+import { useAuth } from "@/hooks/useAuth";  // Importer le hook useAuth
 
 interface NavbarProps {
-  role: "ADMIN" | "TEACHER" | "STUDENT"; // Définition des rôles possibles
+  role: "ADMIN" | "TEACHER" | "STUDENT";
 }
 
 const Navbar: React.FC<NavbarProps> = ({ role }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const location = useLocation(); // Récupère l'URL actuelle
+  const pathname = usePathname(); // Récupérer le chemin actuel
+  const { signOut } = useAuth();  // Utiliser signOut pour déconnecter l'utilisateur
+  const router = useRouter();  // Initialiser le routeur
 
-  // Liens spécifiques en fonction du rôle
   const getNavLinks = (role: "ADMIN" | "TEACHER" | "STUDENT") => {
-    // Définir la base de l'URL en fonction du rôle
     const baseUrl = (() => {
       switch (role) {
         case "ADMIN":
@@ -29,8 +28,7 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
           return "/";
       }
     })();
-  
-    // Définir les chemins relatifs
+
     const links = {
       ADMIN: [
         { label: "Tableau de bord", href: "/dashboard" },
@@ -49,51 +47,49 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
         { label: "Historique", href: "/history" },
       ],
     };
-  
-    // Retourner les liens avec la base de l'URL ajoutée
+
     return (links[role] || []).map((link) => ({
       ...link,
-      href: `${baseUrl}${link.href}`, // Combiner la base URL avec le chemin
+      href: `${baseUrl}${link.href}`,
     }));
+  };
+
+  const handleSignOut = async () => {
+    await signOut();  // Déconnexion de l'utilisateur
+    router.push('/');  // Redirige vers la page de connexion
   };
 
   return (
     <header className="bg-[#2F1893] text-white shadow-md">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
-        {/* Logo */}
         <div className="flex items-center space-x-4">
           <span className="font-bold text-xl">EFREI</span>
         </div>
 
-        {/* Navigation links */}
         <nav className="hidden md:flex space-x-6">
           {getNavLinks(role).map((link) => (
-            <NavLink
+            <Link
               key={link.label}
-              to={link.href}
-              className={({ isActive }) =>
-                `${
-                  location.pathname === link.href
-                    ? "bg-white text-[#2F1893] py-1 rounded-xl px-4" // Active style
-                    : "text-gray-200 rounded-xl py-1 px-4 hover:bg-[#1E0E62]"
-                }`
-              }
+              href={link.href}
+              className={`${pathname === link.href
+                ? "bg-white text-[#2F1893] py-1 rounded-xl px-4"
+                : "text-gray-200 rounded-xl py-1 px-4 hover:bg-[#1E0E62]"
+              }`}
             >
               {link.label}
-            </NavLink>
+            </Link>
           ))}
         </nav>
 
-        {/* Notifications and User Menu */}
         <div className="flex items-center space-x-4">
-          {/* Notification Icon */}
           <Notifications />
 
-          {/* User Dropdown */}
           <div className="relative">
             <button
               className="flex items-center justify-between bg-[#1E0E62] rounded-3xl w-44 h-12 px-4"
               onClick={() => setDropdownOpen(!isDropdownOpen)}
+              aria-haspopup="true"
+              aria-expanded={isDropdownOpen ? "true" : "false"}
             >
               <span>{role === "ADMIN"
                   ? "Administrateur"
@@ -101,10 +97,11 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
                   ? "Professeur"
                   : "Élève"}
               </span>
-              <HiChevronDown className="w-4 h-4"/>
+              <HiChevronDown
+                className={`w-4 h-4 transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+              />
             </button>
 
-            {/* Dropdown Menu */}
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 bg-white text-gray-800 rounded shadow-md w-48">
                 <a
@@ -113,12 +110,12 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
                 >
                   Profil
                 </a>
-                <a
-                  href="/"
+                <button
+                  onClick={handleSignOut}  // Appel de la fonction handleSignOut
                   className="block px-4 py-2 hover:bg-gray-100"
                 >
                   Déconnexion
-                </a>
+                </button>
               </div>
             )}
           </div>

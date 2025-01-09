@@ -1,17 +1,40 @@
-'use client';
+import { createContext, useContext, ReactNode } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { ExtendedUser } from "@/contexts/UserContext"; 
+import { Session, WeakPassword } from '@supabase/supabase-js'; // Importer les types nécessaires
 
-import { Provider } from 'react-redux';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { store } from './redux/store';
+// Typage des réponses de connexion et inscription
+type SignInResponse = {
+  user: ExtendedUser | null;
+  session: Session | null;
+  weakPassword?: WeakPassword;
+};
 
-const queryClient = new QueryClient();
 
-export function Providers({ children }: { children: React.ReactNode }) {
+type UserContextType = {
+  user: ExtendedUser | null;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<SignInResponse>;
+  signOut: () => Promise<void>;
+  
+};
+
+const UserContext = createContext<UserContextType | undefined>(undefined);
+
+export const UserProvider = ({ children }: { children: ReactNode }) => {
+  const user = useAuth(); // Hook de gestion de l'authentification
+
   return (
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
-    </Provider>
+    <UserContext.Provider value={user}>
+      {children}
+    </UserContext.Provider>
   );
-}
+};
+
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error("useUser must be used within a UserProvider");
+  }
+  return context;
+};

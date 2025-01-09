@@ -1,94 +1,92 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
-import { Session, AuthChangeEvent } from '@supabase/supabase-js';
-import { User } from '@/types';
+import { AuthChangeEvent, User } from "@supabase/supabase-js";
+import { useUser } from '@/contexts/UserContext'; 
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, setUser, loading, setLoading } = useUser(); 
+
+  const fetchUser = async (supabaseUser: User) => {
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("username, role")
+        .eq("id", supabaseUser.id)
+        .single();
+
+      if (error) throw new Error("Erreur lors de la récupération des données utilisateur");
+
+      const userData = { ...supabaseUser, ...data };
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
+    } catch (err) {
+      console.error(err);
+      const userData = { ...supabaseUser };
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user : supabaseUser } } = await supabase.auth.getUser();
-      if (supabaseUser) {
-        const { data, error } = await supabase
-          .from('user')
-          .select('username')
-          .eq('id', supabaseUser.id)
-          .single();
-        
+    const fetchSession = async () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+        setLoading(false);
+      } else {
+        const { data, error } = await supabase.auth.getSession();
         if (error) {
-          console.error('Erreur lors de la récupération des données de l\'utilisateur:', error);
-          setUser(supabaseUser);  
+          console.error(error);
+          setLoading(false);
+          return;
+        }
+        if (data?.session?.user) {
+          fetchUser(data.session.user);
         } else {
-          setUser({ ...supabaseUser, ...data });
+          setLoading(false);
         }
       }
-      setLoading(false);
     };
 
-    fetchUser();
+    fetchSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event : AuthChangeEvent, session : Session | null) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       if (session?.user) {
-        const fetchUserData = async () => {
-          const { data, error } = await supabase
-            .from('user')
-            .select('username')
-            .eq('id', session.user.id)
-            .single();
-          
-          if (error) {
-            console.error('Erreur lors de la récupération des données de l\'utilisateur:', error);
-            setUser(session.user);
-          } else {
-            setUser({ ...session.user, ...data });
-          }
-        };
-        
-        fetchUserData();
+        fetchUser(session.user);
       } else {
         setUser(null);
+        localStorage.removeItem('user');
       }
     });
+
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [setUser, setLoading]);
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-    return data;
+
+    const { user: supabaseUser, session } = data;
+    if (!supabaseUser || !session) return { user: null, session: null };
+
+    await fetchUser(supabaseUser);
+
+    return { user: { id: supabaseUser.id, email: supabaseUser.email, role: supabaseUser.role }, session };
   };
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+
+    setUser(null);
+    localStorage.removeItem('user');
   };
 
-  const signUp = async (email: string, password: string, metadata?: object) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: metadata },
-    });
-
-    if (error) throw error;
-    return data;
-  };
-
-  return {
-    user,
-    loading,
-    signIn,
-    signOut,
-    signUp,
-  };
+  return { user, loading, signIn, signOut };
 }
