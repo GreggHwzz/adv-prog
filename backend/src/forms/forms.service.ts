@@ -37,7 +37,23 @@ export class FormsService {
     console.log('Inserted form data:', data);
     return data;
   }
+
+  async deleteForm(form: any) {
+    console.log('Received question id:', form); 
   
+    const { data, error } = await supabaseClient
+      .from('Form')
+      .delete()
+      .eq('id',form.id)
+  
+    if (error) {
+      console.error('Failed to delete form:', error);
+      throw new Error('Failed to delete form');
+    }
+  
+    console.log('Deleted form data:', data);
+    return data;
+  }
 }
 
   

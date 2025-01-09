@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body } from '@nestjs/common';
 import { FormsService } from './forms.service';
 
 @Controller('forms')
@@ -13,5 +13,10 @@ export class FormsController {
   @Post('create')
   async createForm(@Body() form: any) {
     return await this.formsService.createForm(form);
+  }
+
+  @Delete('delete')
+  async deleteReview(@Body() id: any) {
+    return await this.formsService.deleteForm(id);
   }
 }

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:3500';
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 export default axios.create({
     baseURL: BASE_URL,
