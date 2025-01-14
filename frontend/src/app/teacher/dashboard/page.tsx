@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";  // Utilisation de useRouter pour la redirection
 import { useAuth } from "@/hooks/useAuth";    // Utilisation du hook useAuth
-import Navbar from "@/components/NavBar";
+import Navbar from "@/components/layout/NavBar";
 
 const TeacherDashboard = () => {
   const { user, loading } = useAuth();      // Récupérer l'utilisateur et l'état de chargement

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { usePathname, useRouter } from 'next/navigation'; // Importer usePathname
 import Link from "next/link";
 import { HiChevronDown } from "react-icons/hi";
-import Notifications from "./Notifications";
+import Notifications from "../common/Notifications";
 import { useAuth } from "@/hooks/useAuth";  // Importer le hook useAuth
 
 interface NavbarProps {
