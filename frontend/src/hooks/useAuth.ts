@@ -55,12 +55,12 @@ export const useAuth = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      fetchUserProfileFromToken(token); // Utiliser la fonction modifiée pour récupérer le profil
+      //fetchUserProfileFromToken(token); // Utiliser la fonction modifiée pour récupérer le profil
     }
   }, []);
 
   // Fonction modifiée pour récupérer le profil à partir de l'ID utilisateur
-  const fetchUserProfileFromToken = async (token: string) => {
+  /*const fetchUserProfileFromToken = async (token: string) => {
     try {
       const response = await axios.get(`${backendUrl}/auth/profile`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -70,7 +70,7 @@ export const useAuth = () => {
     } catch (error) {
       setError('Erreur de récupération du profil utilisateur');
     }
-  };
+  };*/
 
   // Nouvelle fonction pour récupérer les détails du profil à partir de l'ID utilisateur
   const fetchUserProfile = async (userId: string, token: string) => {
@@ -79,7 +79,7 @@ export const useAuth = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const profile = response.data;
-
+      console.log(profile[0].role)
       setRole(profile[0].role); // Récupérer le rôle du profil
 
     } catch (error) {
