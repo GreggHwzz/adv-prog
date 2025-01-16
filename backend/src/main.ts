@@ -1,8 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+
+  // Configuration CORS
+  const corsOptions: CorsOptions = {
+    origin: 'http://localhost:3000',  // Autorise le frontend sur localhost:3000
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],  // Méthodes HTTP autorisées
+    credentials: true,  // Gérer les cookies/sessions
+  };
+
+  app.enableCors(corsOptions);
+
+  
+
+  // Démarrer l'application NestJS sur port 3500
+  await app.listen(3500);
+  console.log('Backend is running on http://localhost:3500');
 }
 bootstrap();

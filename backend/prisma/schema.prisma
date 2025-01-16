@@ -1,14 +1,86 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("SUPABASE_URL")
+}
+
+model User {
+  id      Int       @id @default(autoincrement())
+  lName   String
+  fName   String
+  email   String    @unique
+  role    UserRole
+  student Student?  @relation
+  admin   Admin?    @relation
+  teacher Teacher?  @relation
+}
+
+model Student {
+  id       Int     @id @default(autoincrement())
+  master   String
+  userId   Int     @unique
+  user     User    @relation(fields: [userId], references: [id])
+  reviews  Review[]
+}
+
+model Admin {
+  id       Int     @id @default(autoincrement())
+  userId   Int     @unique
+  user     User    @relation(fields: [userId], references: [id])
+  forms    Form[]
+}
+
+model Teacher {
+  id       Int     @id @default(autoincrement())
+  userId   Int     @unique
+  user     User    @relation(fields: [userId], references: [id])
+  courses  Course[]
+}
+
+model Course {
+  id          Int       @id @default(autoincrement())
+  name        String
+  averageNote Int
+  teacherId   Int
+  teacher     Teacher   @relation(fields: [teacherId], references: [id])
+  reviews     Review[]
+}
+
+model Review {
+  id         Int     @id @default(autoincrement())
+  questionId Int
+  answer     Int
+  commentary String?
+  studentId  Int
+  formId     Int
+  courseId   Int
+  Course     Course  @relation(fields: [courseId], references: [id])
+  Form       Form    @relation(fields: [formId], references: [id])
+  Student    Student @relation(fields: [studentId], references: [id])
+}
+
+model Form {
+  id        Int      @id @default(autoincrement())
+  review    Review[]
+  studentId Int
+  courseId  Int
+  adminId   Int
+  admin     Admin    @relation(fields: [adminId], references: [id])
+  questions Question[] @relation("FormQuestions") // Relation inverse vers Question
+}
+
+model Question {
+  id      Int    @id @default(autoincrement())
+  content String
+  formId  Int
+  form    Form   @relation("FormQuestions", fields: [formId], references: [id]) // Relation inverse vers Form
+}
+
+enum UserRole {
+  STUDENT
+  ADMIN
+  TEACHER
 }

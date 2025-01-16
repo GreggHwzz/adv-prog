@@ -91,7 +91,8 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
               aria-haspopup="true"
               aria-expanded={isDropdownOpen ? "true" : "false"}
             >
-              <span>{role === "ADMIN"
+              <span>
+                {role === "ADMIN"
                   ? "Administrateur"
                   : role === "TEACHER"
                   ? "Professeur"
