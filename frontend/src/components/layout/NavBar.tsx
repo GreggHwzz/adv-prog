@@ -3,16 +3,16 @@ import { usePathname, useRouter } from 'next/navigation'; // Importer usePathnam
 import Link from "next/link";
 import { HiChevronDown } from "react-icons/hi";
 import Notifications from "../common/Notifications";
-//import { useAuth } from "@/hooks/useAuth";  // Importer le hook useAuth
+import { useAuth } from "@/hooks/useAuth";  // Importer le hook useAuth
 
 interface NavbarProps {
   role: "ADMIN" | "TEACHER" | "STUDENT";
 }
 
-const Navbar: React.FC<NavbarProps> = ({ role }) => {
+const Navbar: React.FC<NavbarProps> = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const pathname = usePathname(); // Récupérer le chemin actuel
-  //const { signOut } = useAuth();  // Utiliser signOut pour déconnecter l'utilisateur
+  const { logout, user, role } = useAuth();  // Utiliser le hook useAuth à l'intérieur du composant
   const router = useRouter();  // Initialiser le routeur
 
   const getNavLinks = (role: "ADMIN" | "TEACHER" | "STUDENT") => {
@@ -55,7 +55,7 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
   };
 
   const handleSignOut = async () => {
-   //await signOut();  // Déconnexion de l'utilisateur
+    await logout();  // Déconnexion de l'utilisateur
     router.push('/');  // Redirige vers la page de connexion
   };
 

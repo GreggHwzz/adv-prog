@@ -6,8 +6,21 @@ const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 export const useAuth = () => {
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);  // Initialisé à true pour indiquer qu'on charge les données
   const [error, setError] = useState<string | null>(null);
+
+  const fetchUserProfile = async (userId: string, token: string) => {
+    try {
+      const response = await axios.get(`${backendUrl}/profiles?userId=${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const profile = response.data;
+      setRole(profile[0].role); // Récupérer le rôle du profil
+      localStorage.setItem('role', profile[0].role); // Sauvegarder le rôle dans localStorage
+    } catch (error) {
+      setError('Erreur lors de la récupération du profil de l\'utilisateur');
+    }
+  };
 
   const signIn = async (email: string, password: string) => {
     setLoading(true);
@@ -19,16 +32,18 @@ export const useAuth = () => {
 
       if (user && token) {
         localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user)); // Sauvegarder l'utilisateur dans localStorage
         setUser(user);
 
-        
+        // Récupérer les détails du profil (et donc le rôle) après la connexion
         await fetchUserProfile(user.id, token);
-        return { user, token,role };
+        setLoading(false); // Fin du chargement
+
+        return { user, token, role };
       }
     } catch (error: any) {
       setError(error.response?.data?.message || 'Erreur lors de la connexion');
-    } finally {
-      setLoading(false);
+      setLoading(false); // Fin du chargement même en cas d'erreur
     }
   };
 
@@ -41,51 +56,31 @@ export const useAuth = () => {
       return response.data;
     } catch (error: any) {
       setError(error.response?.data?.message || 'Erreur lors de l\'inscription');
-    } finally {
       setLoading(false);
     }
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('role');
     setUser(null);
     setRole(null);
   };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      //fetchUserProfileFromToken(token); // Utiliser la fonction modifiée pour récupérer le profil
+    const storedUser = localStorage.getItem('user');
+    const storedRole = localStorage.getItem('role');
+
+    if (token && storedUser && storedRole) {
+      setUser(JSON.parse(storedUser));
+      setRole(storedRole);
+      setLoading(false);  // Fin du chargement si l'utilisateur est déjà connecté
+    } else {
+      setLoading(false);  // Fin du chargement si l'utilisateur n'est pas trouvé
     }
   }, []);
-
-  // Fonction modifiée pour récupérer le profil à partir de l'ID utilisateur
-  /*const fetchUserProfileFromToken = async (token: string) => {
-    try {
-      const response = await axios.get(`${backendUrl}/auth/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUser(response.data);
-      await fetchUserProfile(response.data.id, token); // Récupérer le profil complet avec le rôle
-    } catch (error) {
-      setError('Erreur de récupération du profil utilisateur');
-    }
-  };*/
-
-  // Nouvelle fonction pour récupérer les détails du profil à partir de l'ID utilisateur
-  const fetchUserProfile = async (userId: string, token: string) => {
-    try {
-      const response = await axios.get(`${backendUrl}/profiles?userId=${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const profile = response.data;
-      console.log(profile[0].role)
-      setRole(profile[0].role); // Récupérer le rôle du profil
-
-    } catch (error) {
-      setError('Erreur lors de la récupération du profil de l\'utilisateur');
-    }
-  };
 
   return {
     user,
