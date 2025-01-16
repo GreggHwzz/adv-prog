@@ -3,17 +3,17 @@
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useAuth } from '@/hooks/useAuth';
+//import { useAuth } from '@/hooks/useAuth';
 
 const LoginPage = () => {
-  const { signIn, user, loading } = useAuth();
+  //const { signIn, user, loading } = useAuth();
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+/*
   useEffect(() => {
     // Vérifier si l'utilisateur est déjà connecté
     if (user) {
@@ -31,9 +31,10 @@ const LoginPage = () => {
 
       router.push(redirectPath);
     }
-  }, [user, router]);
+  }, [user, router]);*/
 
   const handleLogin = async (e: React.FormEvent) => {
+    /*
     e.preventDefault();
     setError(null);
 
@@ -55,10 +56,10 @@ const LoginPage = () => {
     } catch (error) {
       setError("Email ou mot de passe incorrect !");
       console.error(error);
-    }
+    }*/
   };
 
-  if (loading) return <div>Chargement...</div>;
+  //if (loading) return <div>Chargement...</div>;
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('/img/background.jpg')" }}>

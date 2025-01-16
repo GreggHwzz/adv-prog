@@ -3,7 +3,7 @@ import { usePathname, useRouter } from 'next/navigation'; // Importer usePathnam
 import Link from "next/link";
 import { HiChevronDown } from "react-icons/hi";
 import Notifications from "../common/Notifications";
-import { useAuth } from "@/hooks/useAuth";  // Importer le hook useAuth
+//import { useAuth } from "@/hooks/useAuth";  // Importer le hook useAuth
 
 interface NavbarProps {
   role: "ADMIN" | "TEACHER" | "STUDENT";
@@ -12,7 +12,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ role }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const pathname = usePathname(); // Récupérer le chemin actuel
-  const { signOut } = useAuth();  // Utiliser signOut pour déconnecter l'utilisateur
+  //const { signOut } = useAuth();  // Utiliser signOut pour déconnecter l'utilisateur
   const router = useRouter();  // Initialiser le routeur
 
   const getNavLinks = (role: "ADMIN" | "TEACHER" | "STUDENT") => {
@@ -55,7 +55,7 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
   };
 
   const handleSignOut = async () => {
-    await signOut();  // Déconnexion de l'utilisateur
+   //await signOut();  // Déconnexion de l'utilisateur
     router.push('/');  // Redirige vers la page de connexion
   };
 
@@ -91,8 +91,7 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
               aria-haspopup="true"
               aria-expanded={isDropdownOpen ? "true" : "false"}
             >
-              <span>
-                {role === "ADMIN"
+              <span>{role === "ADMIN"
                   ? "Administrateur"
                   : role === "TEACHER"
                   ? "Professeur"
