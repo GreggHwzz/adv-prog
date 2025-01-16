@@ -60,13 +60,13 @@ export class TeachersService {
     return data;
   }
 
-  async deleteTeacher(teacher: any) {
-    console.log('Received teacher id:', teacher); 
+  async deleteTeacher(teacherId: string) {
+    console.log('Received teacher id:', teacherId); 
   
     const { data, error } = await supabaseClient
       .from('Teacher')
       .delete()
-      .eq('id',teacher.id)
+      .eq('id',teacherId)
   
     if (error) {
       console.error('Failed to delete teacher:', error);

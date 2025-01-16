@@ -7,11 +7,10 @@ export class ReviewsController {
 
   @Get()
   async getForms(
-    @Query('formId') formId: string,
-    @Query('courseId') courseId: string,
+    @Query('formId') formId: string
   ) {
  
-    const filters = { formId, courseId };
+    const filters = { formId };
     return this.reviewsService.getAllReviews(filters);
   }
 
@@ -24,8 +23,8 @@ export class ReviewsController {
   async createReview(@Body() review: any) {
     return await this.reviewsService.createReview(review);
   }
-  @Delete('delete')
-  async deleteReview(@Body() id: any) {
+  @Delete('delete/:id')
+  async deleteReview(@Param('id') id: any) {
     return await this.reviewsService.deleteReview(id);
   }
   @Put('update/:id')

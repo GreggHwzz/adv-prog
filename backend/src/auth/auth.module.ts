@@ -9,19 +9,19 @@ import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     ConfigModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         global: true,
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: 40000 },
+        signOptions: { expiresIn: '1h' }, // Définit une durée d'expiration lisible
     }),
       inject: [ConfigService],
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtAuthGuard, SupabaseStrategy],
-  exports: [AuthService, JwtAuthGuard],
+  exports: [AuthService, JwtAuthGuard], // Exporte les services et guards pour réutilisation
 })
 export class AuthModule {}

@@ -60,13 +60,13 @@ export class StudentsService {
     return data;
   }
 
-  async deleteStudent(student: any) {
-    console.log('Received student id:', student); 
+  async deleteStudent(studentId: string) {
+    console.log('Received student id:', studentId); 
   
     const { data, error } = await supabaseClient
       .from('Student')
       .delete()
-      .eq('id',student.id)
+      .eq('id', studentId)
   
     if (error) {
       console.error('Failed to delete student:', error);

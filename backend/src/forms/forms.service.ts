@@ -3,7 +3,7 @@ import { supabaseClient } from '../config/supabase';
 
 @Injectable()
 export class FormsService {
-  async getAllForms(filters: { adminId?: string, courseId?: string, studentId?: string }) {
+  async getAllForms(filters: { adminId?: string, courseId?: string}) {
     try {
       console.log('Attempting to fetch filtered forms from Supabase...');
       
@@ -15,9 +15,6 @@ export class FormsService {
       }
       if (filters.courseId) {
         query = query.eq('courseId', filters.courseId);
-      }
-      if (filters.studentId) {
-        query = query.eq('studentId', filters.studentId);
       }
 
       const { data, error } = await query;
@@ -72,13 +69,13 @@ export class FormsService {
     return data;
   }
 
-  async deleteForm(form: any) {
-    console.log('Received form id:', form); 
+  async deleteForm(formId: string) {
+    console.log('Received form id:', formId); 
   
     const { data, error } = await supabaseClient
       .from('Form')
       .delete()
-      .eq('id',form.id)
+      .eq('id',formId)
   
     if (error) {
       console.error('Failed to delete form:', error);

@@ -66,19 +66,19 @@ export class CoursesService {
     return data;
   }
 
-  async deleteCourse(course: any) {
-    console.log('Received course id:', course); 
-  
+  async deleteCourse(courseId: string) {
+    console.log('Received course id:', courseId); 
+
     const { data, error } = await supabaseClient
       .from('Course')
       .delete()
-      .eq('id',course.id)
-  
+      .eq('id', courseId);
+
     if (error) {
       console.error('Failed to delete course:', error);
       throw new Error('Failed to delete course');
     }
-  
+
     console.log('Deleted course data:', data);
     return data;
   }

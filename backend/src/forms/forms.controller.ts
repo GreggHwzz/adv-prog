@@ -8,11 +8,10 @@ export class FormsController {
   @Get()
   async getForms(
     @Query('adminId') adminId: string,
-    @Query('courseId') courseId: string,
-    @Query('studentId') studentId: string
+    @Query('courseId') courseId: string
   ) {
  
-    const filters = { adminId, courseId, studentId };
+    const filters = { adminId, courseId };
     return this.formsService.getAllForms(filters);
   }
 
@@ -26,8 +25,8 @@ export class FormsController {
     return await this.formsService.createForm(form);
   }
 
-  @Delete('delete')
-  async deleteReview(@Body() id: any) {
+  @Delete('delete/:id')
+  async deleteReview(@Param('id') id: any) {
     return await this.formsService.deleteForm(id);
   }
 

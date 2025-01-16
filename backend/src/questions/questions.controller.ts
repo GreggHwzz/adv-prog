@@ -6,8 +6,12 @@ export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
 
   @Get()
-  async getAllQuestions() {
-    return await this.questionsService.getAllQuestions();
+  async getQuestions(
+    @Query('is_custom') is_custom: boolean,
+  ) {
+ 
+    const filters = { is_custom };
+    return this.questionsService.getAllQuestions(filters);
   }
 
   @Get(':id')
@@ -20,8 +24,8 @@ export class QuestionsController {
     return await this.questionsService.createQuestion(question);
   }
 
-  @Delete('delete')
-  async deleteQuestion(@Body() id: any) {
+  @Delete('delete/:id')
+  async deleteQuestion(@Param('id') id: any) {
     return await this.questionsService.deleteQuestion(id);
   }
 

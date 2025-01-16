@@ -3,63 +3,43 @@
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-//import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 
 const LoginPage = () => {
-  //const { signIn, user, loading } = useAuth();
+  const { signIn, user, logout } = useAuth(); // Utilisation du hook
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-/*
-  useEffect(() => {
-    // Vérifier si l'utilisateur est déjà connecté
-    if (user) {
-      const roleRedirects = {
-        STUDENT: '/student/dashboard',
-        TEACHER: '/teacher/dashboard',
-        ADMIN: '/admin/dashboard',
-      };
-
-      console.log('Utilisateur connecté, rôle:', user.role);
-
-      const redirectPath = roleRedirects[user.role as keyof typeof roleRedirects] || '/default-dashboard';
-
-      console.log('Redirection vers:', redirectPath);
-
-      router.push(redirectPath);
-    }
-  }, [user, router]);*/
 
   const handleLogin = async (e: React.FormEvent) => {
-    /*
     e.preventDefault();
-    setError(null);
-
+    setError(null); // Réinitialiser l'erreur avant chaque tentative de connexion
+  
     try {
-      const { user } = await signIn(email, password);
-      if (user) {
-        const roleRedirects = {
-          STUDENT: '/student/dashboard',
-          TEACHER: '/teacher/dashboard',
-          ADMIN: '/admin/dashboard',
-        };
-
-        const redirectPath = roleRedirects[user.role as keyof typeof roleRedirects] || '/default-dashboard';
-
-        console.log('Redirection après connexion:', redirectPath);
-
-        router.push(redirectPath);
+      const { user, token,role } = await signIn(email, password); // Appeler le hook signIn
+      console.log(user)
+      if (user && token) {
+        // Une fois l'utilisateur connecté, récupérer son profil et son rôle
+        if (role) {
+          console.log('Rôle de l\'utilisateur:', role);
+          // Si un rôle est trouvé, rediriger l'utilisateur en fonction de son rôle
+          router.push(`/${role.toString().toLowerCase()}/dashboard`);
+        } else {
+          // Si aucun rôle n'est trouvé, gérer l'absence de rôle
+          setError("Rôle utilisateur introuvable.");
+        }
       }
     } catch (error) {
-      setError("Email ou mot de passe incorrect !");
-      console.error(error);
-    }*/
+      console.error('Login failed:', error);
+      setError(error?.response?.data?.message || 'Erreur lors de la connexion');
+    }
   };
+  
+  
 
-  //if (loading) return <div>Chargement...</div>;
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('/img/background.jpg')" }}>

@@ -3,19 +3,24 @@ import { supabaseClient } from '../config/supabase';
 
 @Injectable()
 export class QuestionsService {
-  async getAllQuestions() {
+  async getAllQuestions(filters: { is_custom?: boolean}) {
     try {
-      console.log('Attempting to fetch all questions from Supabase...');
+      console.log('Attempting to fetch filtered questions from Supabase...');
       
-      const { data, error } = await supabaseClient
+      let query = supabaseClient
         .from('Question')
-        .select('*');  // Pas de filtre
+        .select('*'); 
+      if (filters.is_custom) {
+        query = query.eq('is_custom', filters.is_custom);
+      }
+      const { data, error } = await query;
 
       if (error) {
         console.error('Supabase query error:', error);
         throw new Error(`Supabase query error: ${error.message}`);
       }
-      console.log('Fetched all questions:', data);
+
+      console.log('Fetched filtered questions:', data);
       return data;
     } catch (err) {
       console.error('Internal error fetching questions:', err);
@@ -60,13 +65,13 @@ export class QuestionsService {
     console.log('Inserted question data:', data);
     return data;
   }
-  async deleteQuestion(question: any) {
-    console.log('Received question id:', question); 
+  async deleteQuestion(questionId: string) {
+    console.log('Received question id:', questionId); 
   
     const { data, error } = await supabaseClient
       .from('Question')
       .delete()
-      .eq('id',question.id)
+      .eq('id',questionId)
   
     if (error) {
       console.error('Failed to delete question:', error);

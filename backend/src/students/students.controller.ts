@@ -20,8 +20,8 @@ export class StudentsController {
     return await this.studentsService.createStudent(student);
   }
 
-  @Delete('delete')
-  async deleteReview(@Body() id: any) {
+  @Delete('delete/:id')
+  async deleteReview(@Param('id') id: any) {
     return await this.studentsService.deleteStudent(id);
   }
 

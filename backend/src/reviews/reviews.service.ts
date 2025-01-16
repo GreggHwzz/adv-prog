@@ -3,7 +3,7 @@ import { supabaseClient } from '../config/supabase';
 
 @Injectable()
 export class ReviewsService {
-  async getAllReviews(filters: {courseId?: string, formId?: string }) {
+  async getAllReviews(filters: {formId?: string }) {
   try {
     console.log('Attempting to fetch filtered reviews from Supabase...');
     
@@ -13,9 +13,7 @@ export class ReviewsService {
     if (filters.formId) {
       query = query.eq('adminId', filters.formId);
     }
-    if (filters.courseId) {
-      query = query.eq('courseId', filters.courseId);
-    }
+
 
     const { data, error } = await query;
 
@@ -68,13 +66,13 @@ async getReviewById(filters: { id: string }) {
   
     return data;
   }
-  async deleteReview(review: any) {
-    console.log('Received review id:', review); 
+  async deleteReview(reviewId: string) {
+    console.log('Received review id:', reviewId); 
   
     const { data, error } = await supabaseClient
       .from('Review')
       .delete()
-      .eq('id',review.id)
+      .eq('id',reviewId)
   
     if (error) {
       console.error('Failed to delete review:', error);
