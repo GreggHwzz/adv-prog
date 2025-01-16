@@ -24,8 +24,8 @@ export class CoursesController {
     return await this.coursesService.createCourse(course);
   }
 
-  @Delete('delete')
-  async deleteReview(@Body() id: any) {
+  @Delete('delete/:id')
+  async deleteReview(@Param('id') id: any) {
     return await this.coursesService.deleteCourse(id);
   }
 
