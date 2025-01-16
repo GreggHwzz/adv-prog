@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from 'react';
+import axios from 'axios';
+
 //import { useAuth } from '@/hooks/useAuth';
 import { useRouter} from  "next/navigation";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import des icônes pour l'œil
 import { signIn, signUp } from '../auth/api';
-
+import useProfile from '../hooks/useProfile'
 const LoginPage = () => {
   //const [role, setRole] = useState<'ADMIN' | 'TEACHER' | 'STUDENT' | null>(null);
   //const { signIn } = useAuth();
@@ -21,16 +23,18 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); // État pour afficher/masquer le mot de passe
 
-
   const handleLogin = async () => {
     try {
       const data = await signIn(email, password);
       console.log('Signed In', data);
-      router.push(`/${data.role.toLowerCase()}/Dashboard`)
+      const response = await axios.get(`http://localhost:3500/Profiles/${data.user.id}`);
+      const role = response.data.role;
+      router.push(`/${role.toString().toLowerCase()}/Dashboard`);
     } catch (error) {
-      console.error('Sign In Failed');
+      console.error('Sign In Failed', error);
     }
   };
+  
   /*const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { signIn } = useAuth();

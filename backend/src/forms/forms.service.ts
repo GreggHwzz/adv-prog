@@ -3,27 +3,61 @@ import { supabaseClient } from '../config/supabase';
 
 @Injectable()
 export class FormsService {
-  async getForms() {
+  async getAllForms(filters: { adminId?: string, courseId?: string, studentId?: string }) {
     try {
-      console.log('Attempting to fetch forms from Supabase...');
-      const { data, error } = await supabaseClient
+      console.log('Attempting to fetch filtered forms from Supabase...');
+      
+      let query = supabaseClient
         .from('Form')
-        .select('*');
+        .select('*'); 
+      if (filters.adminId) {
+        query = query.eq('adminId', filters.adminId);
+      }
+      if (filters.courseId) {
+        query = query.eq('courseId', filters.courseId);
+      }
+      if (filters.studentId) {
+        query = query.eq('studentId', filters.studentId);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error('Supabase query error:', error);
         throw new Error(`Supabase query error: ${error.message}`);
       }
 
-      console.log('Fetched forms:', data);
+      console.log('Fetched filtered forms:', data);
       return data;
     } catch (err) {
       console.error('Internal error fetching forms:', err);
       throw new Error('Failed to fetch forms');
     }
   }
+
+  async getFormById(filters: { id: string }) {
+    try {
+      console.log('Attempting to fetch specific form from Supabase...');
+      
+      const { data, error } = await supabaseClient
+        .from('Form')
+        .select('*')
+        .eq('id', filters.id)  
+
+      if (error) {
+        console.error('Supabase query error:', error);
+        throw new Error(`Supabase query error: ${error.message}`);
+      }
+      console.log('Fetched specific form:', data);
+      return data;
+    } catch (err) {
+      console.error('Internal error fetching form:', err);
+      throw new Error('Failed to fetch form');
+    }
+  }
+  
   async createForm(form: any) {
-    console.log('Received form data:', form); // Debugging
+    console.log('Received form data:', form); 
   
     const { data, error } = await supabaseClient
       .from('Form')
@@ -39,7 +73,7 @@ export class FormsService {
   }
 
   async deleteForm(form: any) {
-    console.log('Received question id:', form); 
+    console.log('Received form id:', form); 
   
     const { data, error } = await supabaseClient
       .from('Form')
@@ -53,6 +87,29 @@ export class FormsService {
   
     console.log('Deleted form data:', data);
     return data;
+  }
+
+  async updateForm(formId: string, updatedData: any) {
+    try {
+      console.log('Received form ID:', formId); 
+      console.log('Updated form data:', updatedData); // Debugging
+  
+      const { data, error } = await supabaseClient
+        .from('Form')
+        .update(updatedData)
+        .eq('id', formId);
+  
+      if (error) {
+        console.error('Failed to update form:', error);
+        throw new Error('Failed to update form');
+      }
+  
+      console.log('Updated form data:', data);
+      return data;
+    } catch (err) {
+      console.error('Internal error updating form:', err);
+      throw new Error('Failed to update form');
+    }
   }
 }
 

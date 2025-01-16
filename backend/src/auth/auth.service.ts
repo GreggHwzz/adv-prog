@@ -34,23 +34,12 @@ export class AuthService {
       throw new Error('Utilisateur non trouvé après la connexion.');
     }
   
-    // Récupération du rôle depuis la table profiles
-    const { data: profileData, error: profileError } = await this.supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
-      .single();
   
-    if (profileError) {
-      console.error('Erreur lors de la récupération du rôle:', profileError.message);
-      throw new Error('Impossible de récupérer le rôle de l’utilisateur.');
-    }
   
     return {
       message: 'Connexion réussie',
       user: authData.user,
       token: authData.session?.access_token,
-      role: profileData.role, 
     };
   }
   

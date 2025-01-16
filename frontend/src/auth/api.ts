@@ -6,7 +6,7 @@ export const signIn = async (email: string, password: string) => {
   const { data } = await axios.post(`${backendUrl}/auth/signin`, { email, password });
   
   // Stocker le token JWT localement
-  sessionStorage.setItem('token', data.token);
+  sessionStorage.setItem('id', data.id);
 
       return data;
   };

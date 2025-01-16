@@ -1,4 +1,6 @@
 import Navbar from "@/components/NavBar";
+import { useEffect } from "react";
+
 
 const StudentDashboard = () => {
   return (

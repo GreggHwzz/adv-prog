@@ -3,25 +3,48 @@ import { supabaseClient } from '../config/supabase';
 
 @Injectable()
 export class QuestionsService {
-  async getQuestions() {
+  async getAllQuestions() {
     try {
-      console.log('Attempting to fetch questions from Supabase...');
+      console.log('Attempting to fetch all questions from Supabase...');
+      
       const { data, error } = await supabaseClient
         .from('Question')
-        .select('*');
+        .select('*');  // Pas de filtre
 
       if (error) {
         console.error('Supabase query error:', error);
         throw new Error(`Supabase query error: ${error.message}`);
       }
-
-      console.log('Fetched questions:', data);
+      console.log('Fetched all questions:', data);
       return data;
     } catch (err) {
       console.error('Internal error fetching questions:', err);
       throw new Error('Failed to fetch questions');
     }
   }
+
+  // Récupérer une question spécifique
+  async getQuestionById(filters: { id: string }) {
+    try {
+      console.log('Attempting to fetch specific question from Supabase...');
+      
+      const { data, error } = await supabaseClient
+        .from('Question')
+        .select('*')
+        .eq('id', filters.id)  // Filtrage par id spécifique
+
+      if (error) {
+        console.error('Supabase query error:', error);
+        throw new Error(`Supabase query error: ${error.message}`);
+      }
+      console.log('Fetched specific question:', data);
+      return data;
+    } catch (err) {
+      console.error('Internal error fetching question:', err);
+      throw new Error('Failed to fetch question');
+    }
+  }
+
   async createQuestion(question: any) {
     console.log('Received question data:', question); 
   
@@ -52,6 +75,29 @@ export class QuestionsService {
   
     console.log('Deleted question data:', data);
     return data;
+  }
+
+  async updateQuestion(questionId: string, updatedData: any) {
+    try {
+      console.log('Received question ID:', questionId); 
+      console.log('Updated question data:', updatedData); // Debugging
+  
+      const { data, error } = await supabaseClient
+        .from('Question')
+        .update(updatedData)
+        .eq('id', questionId);
+  
+      if (error) {
+        console.error('Failed to update question:', error);
+        throw new Error('Failed to update question');
+      }
+  
+      console.log('Updated question data:', data);
+      return data;
+    } catch (err) {
+      console.error('Internal error updating question:', err);
+      throw new Error('Failed to update question');
+    }
   }
     
 }
