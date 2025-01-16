@@ -17,6 +17,7 @@ const LoginPage = () => {
   // Vérifier si l'utilisateur est déjà connecté et le rediriger vers le tableau de bord
   useEffect(() => {
     if (!loading && user && role) {
+      // Rediriger l'utilisateur en fonction du rôle
       router.push(`/${role.toString().toLowerCase()}/dashboard`);
     }
   }, [user, role, loading, router]);
@@ -27,7 +28,6 @@ const LoginPage = () => {
 
     try {
       const { user, token, role } = await signIn(email, password); // Appeler le hook signIn
-      console.log(user);
 
       if (user && token) {
         if (role) {
