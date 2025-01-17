@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useStudent } from "@/hooks/useStudent";
 import Navbar from "@/components/layout/NavBar";
+import EvaluationCard from "@/components/student/EvaluationCard";
+import StudentCard from "@/components/student/StudentCard";
+import { Evaluation } from "@/types/Evaluation";
+import Loader from "@/components/common/Loader";
 
 // Définition du type Student
 interface Student {
@@ -15,10 +19,13 @@ interface Student {
 }
 
 const StudentDashboard: React.FC = () => {
+
+  // TODO : Ici faut correctement alimenter avec le back
   const { user, loading: authLoading } = useAuth();
   const { students, loading, error, fetchStudentById } = useStudent();
   const [student, setStudent] = useState<Student | null>(null); // Utilisation du type défini
   const router = useRouter();
+  const [evaluations, setEvaluations] = useState<any[]>([]); // TODO : a compléter pour récupérer les évals
 
   useEffect(() => {
     const fetchStudentData = async () => {
@@ -33,10 +40,10 @@ const StudentDashboard: React.FC = () => {
     };
   
     fetchStudentData(); // Appeler la fonction directement ici
-  }, [authLoading, user]); // Limiter les dépendances
+  }, [authLoading, fetchStudentById, user]); // Limiter les dépendances
 
   if (authLoading || loading) {
-    return <div>Chargement...</div>;
+    return <Loader />;
   }
 
   if (!user) {
@@ -44,12 +51,27 @@ const StudentDashboard: React.FC = () => {
     return null;
   }
 
+  // TODO : 
   return (
-    <div>
+    <div className="container mx-auto p-6 space-y-6">
       <Navbar role="STUDENT" />
-      {/* Le contenu de la page dashboard */}
-      <h1>Bienvenue sur le tableau de bord de l&apos;élève</h1>
-      {/* Autres composants ou contenu de la page */}
+      <div className="flex space-x-6">
+        <StudentCard
+          firstName={student?.fname}
+          lastName={student?.lname}
+          className={student?.master}
+        />
+        <div className="w-3/4 space-y-4">
+          {evaluations.map((evaluation: Evaluation) => (
+            <EvaluationCard
+              key={evaluation.id}
+              title={evaluation.title}
+              teacherName={evaluation.professor}
+              dueDate={evaluation.deadline}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
