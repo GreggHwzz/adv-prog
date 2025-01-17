@@ -39,7 +39,7 @@ const TeacherDashboard: React.FC = () => {
   }
 
   if (!user) {
-    router.push("/login");
+    router.push("/");
     return null;
   }
 

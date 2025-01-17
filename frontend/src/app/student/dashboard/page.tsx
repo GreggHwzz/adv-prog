@@ -40,7 +40,7 @@ const StudentDashboard: React.FC = () => {
   }
 
   if (!user) {
-    router.push("/login");
+    router.push("/");
     return null;
   }
 
