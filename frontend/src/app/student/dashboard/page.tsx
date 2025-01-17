@@ -28,28 +28,28 @@ const StudentDashboard: React.FC = () => {
   const [evaluations, setEvaluations] = useState<any[]>([]); // TODO : a compléter pour récupérer les évals
 
   useEffect(() => {
-    const fetchStudentData = async () => {
-      if (!authLoading && user) {
+    // Vérifiez si l'authentification est terminée et si l'utilisateur est défini
+    if (!authLoading && user) {
+      const fetchStudentData = async () => {
         try {
           const studentData = await fetchStudentById(user.id);
           setStudent(studentData || null);
         } catch (err) {
           console.error("Erreur lors de la récupération de l'étudiant :", err);
         }
-      }
-    };
+      };
+      fetchStudentData(); // Appel de la fonction pour récupérer les données de l'étudiant
+    }
+  }, [authLoading, user, fetchStudentById]); // Limitez les dépendances uniquement à ce qui est nécessaire
   
-    fetchStudentData(); // Appeler la fonction directement ici
-  }, [authLoading, fetchStudentById, user]); // Limiter les dépendances
 
-  if (authLoading || loading) {
-    return <Loader />;
-  }
+ 
 
-  if (!user) {
+  if (!user && !authLoading) {
     router.push("/");
     return null;
   }
+  
 
   // TODO : 
   return (
