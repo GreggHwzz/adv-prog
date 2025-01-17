@@ -36,7 +36,8 @@ export class QuestionsService {
       const { data, error } = await supabaseClient
         .from('Question')
         .select('*')
-        .eq('id', filters.id)  // Filtrage par id spécifique
+        .eq('id', filters.id)  
+        .single()
 
       if (error) {
         console.error('Supabase query error:', error);
@@ -55,7 +56,9 @@ export class QuestionsService {
   
     const { data, error } = await supabaseClient
       .from('Question')
-      .insert([question]);
+      .insert([question])
+      .select('*')
+      .single()
   
     if (error) {
       console.error('Failed to create question:', error);

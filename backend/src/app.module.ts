@@ -11,6 +11,7 @@ import { CoursesModule } from './courses/courses.module';
 import { StudentsModule } from './students/students.module';
 import { TeachersModule } from './teachers/teachers.module';
 import { AdminsModule } from './admins/admins.module';
+import { FormQuestionsModule } from './formQuestions/formQuestions.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AdminsModule } from './admins/admins.module';
     StudentsModule,
     TeachersModule,
     AdminsModule,
+    FormQuestionsModule,
     ConfigModule.forRoot({
       isGlobal: true, 
       envFilePath: '.env',

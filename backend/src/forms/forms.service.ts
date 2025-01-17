@@ -40,6 +40,7 @@ export class FormsService {
         .from('Form')
         .select('*')
         .eq('id', filters.id)  
+        .single()
 
       if (error) {
         console.error('Supabase query error:', error);
@@ -58,7 +59,9 @@ export class FormsService {
   
     const { data, error } = await supabaseClient
       .from('Form')
-      .insert([form]);
+      .insert([form])
+      .select('*')
+      .single()
   
     if (error) {
       console.error('Failed to create form:', error);
