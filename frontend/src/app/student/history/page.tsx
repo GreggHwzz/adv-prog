@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import React, { useState, useEffect } from "react";
 import StatsCard from "@/components/student/StatsCard";
 import CompletedEvaluationCard from "@/components/student/CompletedEvaluationCard";
