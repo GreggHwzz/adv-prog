@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
+import { useQuestion } from './useQuestion'; // Importer le hook useQuestion
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -18,34 +19,13 @@ interface Question {
 interface UseFormReturn {
   createForm: (courseId: string, adminId: string, additionalQuestions: Omit<Question, 'id'>[]) => Promise<Form | undefined>;
   updateFormQuestions: (formId: string, updatedQuestionIds: string[]) => Promise<Form | undefined>;
-  questionsToAdd: Question[];  // Expose questionsToAdd to be used in the component
 }
 
 export const useForm = (): UseFormReturn => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [questionsToAdd, setQuestionsToAdd] = useState<Question[]>([]);
 
-  // Fonction pour récupérer les questions par défaut
-  const fetchDefaultQuestions = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await axios.get<Question[]>(`${backendUrl}/questions`, { params: { is_custom: false } });
-      setQuestionsToAdd(response.data);  // Mettre à jour les questions par défaut
-    } catch (err: unknown) {
-      console.error('Error fetching default questions:', err);
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Chargez les questions par défaut dès que le hook est initialisé
-  useEffect(() => {
-    fetchDefaultQuestions();
-  }, []);  // Ne s'exécute qu'une seule fois lors du montage du composant
+  const { questionsToAdd } = useQuestion(); // Utilisation du hook useQuestion pour récupérer les questions par défaut
 
   // Créer un formulaire avec les questions par défaut et supplémentaires
   const createForm = async (
@@ -138,6 +118,5 @@ export const useForm = (): UseFormReturn => {
   return {
     createForm,
     updateFormQuestions,
-    questionsToAdd, // Expose questionsToAdd to be used in the component
   };
 };

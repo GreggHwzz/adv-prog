@@ -1,69 +1,40 @@
+"use client"
 import Navbar from "@/components/layout/NavBar";
-import { useForms } from "@/hooks/useForms";
-import { useCreateForm } from "@/hooks/useCreateForm";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import Loader from "@/components/common/Loader";
+import FormManager from '@/components/admin/FormManager';
 
+// Données en dur simulant la récupération des formulaires
+const mockForms = [
+  { id: "1", title: "Formulaire de feedback" },
+  { id: "2", title: "Formulaire d'inscription" },
+  { id: "3", title: "Formulaire de satisfaction" },
+];
 
-//TODO : charger les questionnaires a partir d'un hook useForm qui va les récup correctement du back
 const Forms = () => {
-  const { forms, loading, error } = useForms();
-  const { createForm, isCreating, creationError } = useCreateForm();
+  // Simuler l'état de chargement et l'erreur
   const [loading, setLoading] = useState<boolean>(false);
   const [newFormTitle, setNewFormTitle] = useState("");
+  const [forms, setForms] = useState(mockForms);
+  const [isCreating, setIsCreating] = useState(false);
+  const [creationError, setCreationError] = useState<string | null>(null);
 
-
-  const handleCreateForm = async () => {
-    if (!newFormTitle) return;
-    await createForm(newFormTitle);
-    setNewFormTitle(""); 
+  const handleFormCreated = (form) => {
+    console.log('Formulaire créé avec succès :', form);
   };
 
-  if (loading) {
-    return (
-      <Loader/>
-    );
-  }
 
-  if (error) {
-    return (
-      <div>
-        <Navbar role="ADMIN" />
-        <div className="container mx-auto py-8">
-          <p className="text-red-500">Erreur lors du chargement des formulaires : {error}</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div>
-      <Navbar role="ADMIN"/>
+      <Navbar role="ADMIN" />
       <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6">Gestion des formulaires</h1>
+        <h1 className="text-2xl font-bold mb-6">Gestion des formulaires</h1>
 
-      {/* Formulaire pour ajouter un nouveau formulaire */}
-      <div className="mb-6 flex">
-        <input
-          type="text"
-          value={newFormTitle}
-          onChange={(e) => setNewFormTitle(e.target.value)}
-          className="border px-4 py-2 mr-4 rounded"
-          placeholder="Titre du formulaire"
-        />
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={handleCreateForm}
-        >
-          <FaPlus className="mr-2" /> Ajouter un formulaire
-        </button>
-      </div>
+        <FormManager onFormCreated={handleFormCreated} />
 
-      {/* Liste des formulaires */}
-      {loading ? (
-        <p>Chargement...</p>
-      ) : (
+        {/* Liste des formulaires */}
         <table className="min-w-full table-auto">
           <thead>
             <tr>
@@ -84,8 +55,7 @@ const Forms = () => {
             ))}
           </tbody>
         </table>
-      )}
-    </div>
+      </div>
     </div>
   );
 };
