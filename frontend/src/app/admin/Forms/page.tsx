@@ -1,41 +1,41 @@
 import Navbar from "@/components/layout/NavBar";
-import { apiService } from "@/services/api.service";
-import { Form } from "@/types/Form";
-import { useState, useEffect } from "react";
+import { useForms } from "@/hooks/useForms";
+import { useCreateForm } from "@/hooks/useCreateForm";
+import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
+import Loader from "@/components/common/Loader";
 
+
+//TODO : charger les questionnaires a partir d'un hook useForm qui va les récup correctement du back
 const Forms = () => {
-  const [forms, setForms] = useState<Form[]>([]);
+  const { forms, loading, error } = useForms();
+  const { createForm, isCreating, creationError } = useCreateForm();
   const [loading, setLoading] = useState<boolean>(false);
   const [newFormTitle, setNewFormTitle] = useState("");
 
-  useEffect(() => {
-    const fetchForms = async () => {
-      setLoading(true);
-      try {
-        const response = await apiService.getForms(); // À implémenter dans apiService
-        setForms(response);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des formulaires :", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchForms();
-  }, []);
 
   const handleCreateForm = async () => {
     if (!newFormTitle) return;
-
-    try {
-      const response = await apiService.createForm({ title: newFormTitle });
-      setForms([...forms, response]);
-      setNewFormTitle("");
-    } catch (error) {
-      console.error("Erreur lors de la création du formulaire :", error);
-    }
+    await createForm(newFormTitle);
+    setNewFormTitle(""); 
   };
+
+  if (loading) {
+    return (
+      <Loader/>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        <Navbar role="ADMIN" />
+        <div className="container mx-auto py-8">
+          <p className="text-red-500">Erreur lors du chargement des formulaires : {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
