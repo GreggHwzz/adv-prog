@@ -1,24 +1,46 @@
-"use client"
+"use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";  // Utilisation de useRouter pour la redirection
-import { useAuth } from "@/hooks/useAuth";    // Utilisation du hook useAuth
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { useTeacher } from "@/hooks/useTeacher";
 import Navbar from "@/components/layout/NavBar";
 
-const TeacherDashboard = () => {
-  const { user, loading } = useAuth();      // Récupérer l'utilisateur et l'état de chargement
+// Définition du type Teacher
+interface Teacher {
+  id: string;
+  lname: string;
+  fname: string;
+}
+
+const TeacherDashboard: React.FC = () => {
+  const { user, loading: authLoading } = useAuth();
+  const { teachers, loading, error, fetchTeacherById } = useTeacher();
+  const [teacher, setTeacher] = useState<Teacher | null>(null); // Utilisation du type défini
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
-      // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
-      router.push("/");
-    }
-  }, [user, loading, router]);
+    const fetchTeacherData = async () => {
+      if (!authLoading && user) {
+        try {
+          const teacherData = await fetchTeacherById(user.id);
+          setTeacher(teacherData || null);
+        } catch (err) {
+          console.error("Erreur lors de la récupération de l'étudiant :", err);
+        }
+      }
+    };
+  
+    fetchTeacherData(); // Appeler la fonction directement ici
+  }, [authLoading, user]); // Limiter les dépendances
 
-  if (loading) {
-    // Afficher un message de chargement si l'état de l'utilisateur est en cours de récupération
+  if (authLoading || loading) {
     return <div>Chargement...</div>;
+  }
+
+  if (!user) {
+    router.push("/login");
+    return null;
   }
 
   return (

@@ -30,7 +30,8 @@ export class StudentsService {
       const { data, error } = await supabaseClient
         .from('Student')
         .select('*')
-        .eq('id', filters.id)  
+        .eq('id', filters.id) 
+        .single()
 
       if (error) {
         console.error('Supabase query error:', error);

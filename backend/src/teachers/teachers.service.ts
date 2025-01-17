@@ -31,6 +31,7 @@ export class TeachersService {
         .from('Teacher')
         .select('*')
         .eq('id', filters.id)  
+        .single()
 
       if (error) {
         console.error('Supabase query error:', error);
