@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_SUPABASE_URL=https://<your-supabase-project>.supabase.co
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3500:3500"
+    environment:
+      - SUPABASE_URL=https://https://zzlwzvzeqcmusdfdsuny.supabase.co
+      - SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6bHd6dnplcWNtdXNkZmRzdW55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI3OTA2OTQsImV4cCI6MjA0ODM2NjY5NH0.GqkedL3b8xz-jfJm5JEfeknxloDHYM7o-oIXYBUwYNs
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
