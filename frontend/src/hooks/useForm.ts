@@ -37,7 +37,10 @@ export const useForm = (): UseFormReturn => {
     setError(null);
 
     try {
-      // 1. Créer un tableau des IDs des questions
+      // 1. Vérifier si un formulaire existe déjà pour ce cours
+      
+
+      // 2. Créer un tableau des IDs des questions
       const allQuestionIds: string[] = [];
 
       // Ajouter les IDs des questions par défaut au tableau
@@ -45,7 +48,7 @@ export const useForm = (): UseFormReturn => {
         allQuestionIds.push(q.id);  // Ajouter uniquement l'ID
       });
 
-      // 2. Créer les questions personnalisées et récupérer leurs IDs
+      // 3. Créer les questions personnalisées et récupérer leurs IDs
       const createdQuestions = await Promise.all(
         additionalQuestions.map(async (question) => {
           const response = await axios.post<Question>(`${backendUrl}/questions/create`, {
@@ -61,7 +64,7 @@ export const useForm = (): UseFormReturn => {
         allQuestionIds.push(q.id); // Ajouter uniquement l'ID
       });
 
-      // 3. Créer le formulaire
+      // 4. Créer le formulaire
       const formResponse = await axios.post<Form>(`${backendUrl}/forms/create`, {
         courseId,
         adminId,
@@ -69,7 +72,7 @@ export const useForm = (): UseFormReturn => {
 
       const formId = formResponse.data.id;
 
-      // 4. Associer les questions au formulaire via la table FormQuestions
+      // 5. Associer les questions au formulaire via la table FormQuestions
       await Promise.all(
         allQuestionIds.map(async (questionId) => {
           await axios.post(`${backendUrl}/form-questions/create`, {

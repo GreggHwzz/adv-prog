@@ -11,6 +11,8 @@ import { CoursesModule } from './courses/courses.module';
 import { StudentsModule } from './students/students.module';
 import { TeachersModule } from './teachers/teachers.module';
 import { AdminsModule } from './admins/admins.module';
+import { EnrollmentModule} from './enrollment/enrollment.module';
+
 import { FormQuestionsModule } from './formQuestions/formQuestions.module';
 
 @Module({
@@ -24,6 +26,7 @@ import { FormQuestionsModule } from './formQuestions/formQuestions.module';
     StudentsModule,
     TeachersModule,
     AdminsModule,
+    EnrollmentModule,
     FormQuestionsModule,
     ConfigModule.forRoot({
       isGlobal: true, 
