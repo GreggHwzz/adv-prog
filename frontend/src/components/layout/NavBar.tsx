@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react";
 import { usePathname, useRouter } from 'next/navigation'; // Importer usePathname
 import Link from "next/link";
@@ -12,7 +14,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const pathname = usePathname(); // Récupérer le chemin actuel
-  const { logout, user, role } = useAuth();  // Utiliser le hook useAuth à l'intérieur du composant
+  const { logout, role } = useAuth();  // Utiliser le hook useAuth à l'intérieur du composant
   const router = useRouter();  // Initialiser le routeur
 
   const getNavLinks = (role: "ADMIN" | "TEACHER" | "STUDENT") => {
@@ -34,13 +36,10 @@ const Navbar: React.FC<NavbarProps> = () => {
         { label: "Tableau de bord", href: "/dashboard" },
         { label: "Gestion des utilisateurs", href: "/users" },
         { label: "Formulaires", href: "/forms" },
-        { label: "Analytics", href: "/analytics" },
-        { label: "Configuration", href: "/settings" },
       ],
       TEACHER: [
         { label: "Tableau de bord", href: "/dashboard" },
         { label: "Évaluations", href: "/evaluations" },
-        { label: "Mes statistiques", href: "/stats" },
       ],
       STUDENT: [
         { label: "Tableau de bord", href: "/dashboard" },
@@ -55,12 +54,12 @@ const Navbar: React.FC<NavbarProps> = () => {
   };
 
   const handleSignOut = async () => {
-    await logout();  // Déconnexion de l'utilisateur
-    router.push('/');  // Redirige vers la page de connexion
+    await logout();  
+    router.push('/');
   };
 
   return (
-    <header className="bg-[#2F1893] text-white shadow-md">
+    <header className="bg-[#4f46e5] text-white shadow-md">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         <div className="flex items-center space-x-4">
           <span className="font-bold text-xl">EFREI</span>
@@ -86,7 +85,7 @@ const Navbar: React.FC<NavbarProps> = () => {
 
           <div className="relative">
             <button
-              className="flex items-center justify-between bg-[#1E0E62] rounded-3xl w-44 h-12 px-4"
+              className="flex items-center justify-between bg-[#3b35ad] rounded-3xl w-44 h-12 px-4"
               onClick={() => setDropdownOpen(!isDropdownOpen)}
               aria-haspopup="true"
               aria-expanded={isDropdownOpen ? "true" : "false"}
@@ -104,12 +103,6 @@ const Navbar: React.FC<NavbarProps> = () => {
 
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 bg-white text-gray-800 rounded shadow-md w-48">
-                <a
-                  href="/profile"
-                  className="block px-4 py-2 hover:bg-gray-100"
-                >
-                  Profil
-                </a>
                 <button
                   onClick={handleSignOut}  // Appel de la fonction handleSignOut
                   className="block px-4 py-2 hover:bg-gray-100"

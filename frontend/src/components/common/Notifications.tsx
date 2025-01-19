@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react";
 import { FaBell } from "react-icons/fa";
 import { HiX } from "react-icons/hi";

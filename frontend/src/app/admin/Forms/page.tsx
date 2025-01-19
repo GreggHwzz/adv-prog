@@ -1,24 +1,27 @@
 "use client"
-import Navbar from "@/components/layout/NavBar";
+
 import { useState, useEffect } from "react";
-import { FaPlus } from "react-icons/fa";
-import Loader from "@/components/common/Loader";
 import FormManager from '@/components/admin/FormManager';
 import { useForms } from '../../../hooks/useForms';
-import { useAuth } from '../../../hooks/useAuth';  // Importer le hook useAuth
-import { useCourse } from '../../../hooks/useCourse';  // Importer le hook useCourse
-// Données en dur simulant la récupération des formulaires
-const mockForms = [
-  { id: "1", title: "Formulaire de feedback" },
-  { id: "2", title: "Formulaire d'inscription" },
-  { id: "3", title: "Formulaire de satisfaction" },
-];
+import { useAuth } from '../../../hooks/useAuth';  
+import { useCourse } from '../../../hooks/useCourse'; 
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Link,
+  Typography,
+} from "@mui/material";
+
 
 const Forms = () => {
-  // Simuler l'état de chargement et l'erreur
-  const [newFormTitle, setNewFormTitle] = useState("");
-  const [isCreating, setIsCreating] = useState(false);
-  const [creationError, setCreationError] = useState<string | null>(null);
+
 
   const { user, loading: authLoading, error: authError } = useAuth();
   const { fetchForms, deleteForm, forms, loading, error } = useForms();
@@ -61,42 +64,53 @@ const Forms = () => {
 
   return (
     <div>
-      <Navbar role="ADMIN" />
       <div className="container mx-auto py-8">
-        <h1 className="text-2xl font-bold mb-6">Gestion des formulaires</h1>
   
         <FormManager />
   
         {/* Liste des formulaires */}
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr>
-              <th className="px-4 py-2 text-left">Titre</th>
-              <th className="px-4 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {forms.map((form) => {
-              // Trouver le cours associé au formulaire
-              const courseName = courses.find((course) => course.id === form.courseId)?.name;
-  
-              return (
-                <tr key={form.id} className="hover:bg-gray-100">
-                  <td className="px-4 py-2">
-                    <a href={`/admin/Forms/${form.id}`} className="text-blue-500 hover:underline">
-                      {courseName ? `Course: ${courseName}` : `Course ID: ${form.courseId}`}
-                    </a>
-                  </td>
-                  <td className="px-4 py-2">
-                    
-                    <button  onClick={() => handleDelete(form.id)} className="text-red-500 hover:underline mr-4">Supprimer</button>
-                    
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <Typography variant="h4" sx={{ mb: 4, mt: 4 ,fontWeight: "bold", color: "#2d3748" }}>
+        Formulaires créés
+      </Typography>
+        <TableContainer component={Paper} sx={{ mt: 4 }}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ fontWeight: "bold", color: "#4f46e5", fontSize : "1.2rem" }}>Titre</TableCell>
+            <TableCell sx={{ fontWeight: "bold", color: "#4f46e5", fontSize : "1.2rem" }}>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {forms.map((form) => {
+            // Trouver le cours associé au formulaire
+            const courseName = courses.find((course) => course.id === form.courseId)?.name;
+
+            return (
+              <TableRow key={form.id} hover>
+                <TableCell sx={{fontWeight: "bold", color :"#4f46e5"}}>
+                  <Link
+                    href={`/admin/Forms/${form.id}`}
+                    underline="hover"
+                  >
+                    {courseName ? `Course: ${courseName}` : `Course ID: ${form.courseId}`}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    onClick={() => handleDelete(form.id)}
+                    color="error"
+                    variant="outlined"
+                    size="small"
+                  >
+                    Supprimer
+                  </Button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
       </div>
     </div>
   );

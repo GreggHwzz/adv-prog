@@ -1,15 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Teacher } from '@/types/Teacher';
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-
-
-// Types
-interface Teacher {
-  id: string;
-  lname: string;
-  fname: string;
-}
 
 interface UseTeachersReturn {
   teachers: Teacher[];
@@ -17,7 +10,7 @@ interface UseTeachersReturn {
   error: string | null;
   fetchTeachers: () => Promise<void>;
   fetchTeacherById: (id: string) => Promise<Teacher | undefined>;
-  createTeacher: (teacher: Omit<Teacher, 'id'>) => Promise<Teacher | undefined>;
+  createTeacher: (teacher: Omit<Teacher, 'id'>, password: string, userRole: string) => Promise<Teacher | undefined>;
   updateTeacher: (id: string, updatedData: Partial<Teacher>) => Promise<Teacher | undefined>;
   deleteTeacher: (id: string) => Promise<void>;
 }
@@ -59,11 +52,14 @@ export const useTeacher = (): UseTeachersReturn => {
   
 
   // Create a new teacher
-  const createTeacher = async (teacher: Omit<Teacher, 'id'>): Promise<Teacher | undefined> => {
+  const createTeacher = async (teacher: Omit<Teacher, 'id'>, password: string, userRole: string): Promise<Teacher | undefined> => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post<Teacher>(`${backendUrl}/teachers`, teacher);
+      // Envoie des données au backend
+      const response = await axios.post<Teacher>(`${backendUrl}/teachers/create`, { ...teacher, password, userRole });
+  
+      // Ajout à la liste des enseignants dans le state
       setTeachers((prev) => [...prev, response.data]);
       return response.data;
     } catch (err: unknown) {
@@ -100,10 +96,10 @@ export const useTeacher = (): UseTeachersReturn => {
     setLoading(true);
     setError(null);
     try {
-      await axios.delete(`${backendUrl}/teachers/${id}`);
+      await axios.delete(`${backendUrl}/teachers/delete/${id}`);
       setTeachers((prev) => prev.filter((teacher) => teacher.id !== id));
     } catch (err: unknown) {
-      console.error('Error deleting teacher:', err);
+      console.log('Error deleting teacher:', err);
       setError((err as Error).message);
     } finally {
       setLoading(false);
