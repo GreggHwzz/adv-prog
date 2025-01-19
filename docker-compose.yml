@@ -13,6 +13,10 @@ services:
       - backend
     networks:
       - app-network
+    volumes:
+    - ./frontend:/app
+    - /app/node_modules
+
 
   backend:
     build:
@@ -25,6 +29,9 @@ services:
       - SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6bHd6dnplcWNtdXNkZmRzdW55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI3OTA2OTQsImV4cCI6MjA0ODM2NjY5NH0.GqkedL3b8xz-jfJm5JEfeknxloDHYM7o-oIXYBUwYNs
     networks:
       - app-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
 
 networks:
   app-network:

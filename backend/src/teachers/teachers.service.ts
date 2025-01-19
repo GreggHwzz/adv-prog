@@ -46,19 +46,35 @@ export class TeachersService {
   }
   
   async createTeacher(teacher: any) {
-    console.log('Received teacher data:', teacher); 
+    console.log('Received teacher data:', teacher);
   
-    const { data, error } = await supabaseClient
-      .from('Teacher')
-      .insert([teacher]);
+    const { fname, lname, email, password, userRole, course } = teacher;
+  
+    const { data: user, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          userrole: userRole,
+        },
+      },
+    });
   
     if (error) {
-      console.error('Failed to create teacher:', error);
-      throw new Error('Failed to create teacher');
+      throw new Error(`Erreur lors de la création de l'utilisateur : ${error.message}`);
     }
   
-    console.log('Inserted teacher data:', data);
-    return data;
+    // Insertion des données spécifiques à l'enseignant dans la table "teachers"
+    const { data, error: teacherError } = await supabaseClient
+      .from('Teacher')
+      .insert([{ fname, lname, email, course, id: user.user.id }]);
+  
+    if (teacherError) {
+      console.log("voici l'erreur", teacherError)
+      throw new Error('Erreur lors de l\'insertion dans la table Teacher');
+    }
+  
+    return { user, data };
   }
 
   async deleteTeacher(teacherId: string) {

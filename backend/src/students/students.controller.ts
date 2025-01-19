@@ -16,7 +16,7 @@ export class StudentsController {
   }
 
   @Post('create')
-  async createStudent(@Body() student: any) {
+  async createStudent(@Body() student: { fname: string, lname: string, email: string, password: string, userRole: string }) {
     return await this.studentsService.createStudent(student);
   }
 

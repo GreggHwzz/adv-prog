@@ -47,18 +47,34 @@ export class StudentsService {
   
   async createStudent(student: any) {
     console.log('Received student data:', student); 
+
+    const { fname, lname, email, password, userRole } = student;
   
-    const { data, error } = await supabaseClient
-      .from('Student')
-      .insert([student]);
-  
+    const { data: userResponse, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          userrole: userRole,
+        },
+      },
+    });
+
     if (error) {
-      console.error('Failed to create student:', error);
-      throw new Error('Failed to create student');
+      throw new Error(`Erreur lors de la création de l'utilisateur : ${error.message}`);
     }
-  
-    console.log('Inserted student data:', data);
-    return data;
+
+    const { data, error: studentError } = await supabaseClient
+      .from('Student')
+      .insert([{ fname, lname, email, student ,id: userResponse.user.id }]);
+
+    if (studentError) {
+      await supabaseClient.auth.admin.deleteUser(userResponse.user.id); // pour la précision ici je delete le user si l'insertion se passe mal
+      console.log("Erreur a l'insertion -> ", studentError)
+      throw new Error('Erreur lors de l\'insertion dans la table Student');
+    }
+
+    return { userResponse, data };
   }
 
   async deleteStudent(studentId: string) {
