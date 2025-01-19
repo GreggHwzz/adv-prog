@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
-import Navbar from "@/components/layout/NavBar";
 import QuestionnaireCard from "@/components/admin/QuestionnaireCard";
 import Loader from "@/components/common/Loader";
 
@@ -82,7 +81,6 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <Navbar role="ADMIN" />
       <h1 className="text-3xl font-bold mb-6">Tableau de bord - Administrateur</h1>
       
       {/* Affichage des questionnaires sous forme de cartes */}
