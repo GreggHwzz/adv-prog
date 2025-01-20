@@ -4,31 +4,25 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useStudent } from "@/hooks/useStudent";
-import Navbar from "@/components/layout/NavBar";
-import EvaluationCard from "@/components/student/EvaluationCard";
+import { useForms } from "@/hooks/useForms"; 
 import StudentCard from "@/components/student/StudentCard";
-import { Evaluation } from "@/types/Evaluation";
-import Loader from "@/components/common/Loader";
+import { Form } from "@/types/Form";
+import Link from "next/link";
+import { Student } from "@/types/Student";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty'
 
-// Définition du type Student
-interface Student {
-  id: string;
-  master: string;
-  lname: string;
-  fname: string;
-}
 
 const StudentDashboard: React.FC = () => {
 
-  // TODO : Ici faut correctement alimenter avec le back
   const { user, loading: authLoading } = useAuth();
-  const { students, loading, error, fetchStudentById } = useStudent();
-  const [student, setStudent] = useState<Student | null>(null); // Utilisation du type défini
+  const { fetchStudentById } = useStudent();
+  const { fetchFormsForStudent } = useForms();  
+  const [student, setStudent] = useState<Student | null>(null); 
+  const [forms, setForms] = useState<Form[]>([]); 
   const router = useRouter();
-  const [evaluations, setEvaluations] = useState<any[]>([]); // TODO : a compléter pour récupérer les évals
 
   useEffect(() => {
-    // Vérifiez si l'authentification est terminée et si l'utilisateur est défini
     if (!authLoading && user) {
       const fetchStudentData = async () => {
         try {
@@ -38,37 +32,66 @@ const StudentDashboard: React.FC = () => {
           console.error("Erreur lors de la récupération de l'étudiant :", err);
         }
       };
-      fetchStudentData(); // Appel de la fonction pour récupérer les données de l'étudiant
+      fetchStudentData();
     }
-  }, [authLoading, user, fetchStudentById]); // Limitez les dépendances uniquement à ce qui est nécessaire
-  
+  }, [authLoading, user]);
 
- 
+  useEffect(() => {
+    if (user) {
+      const fetchStudentForms = async () => {
+        try {
+          const studentForms = await fetchFormsForStudent(user.id);
+          console.log("sudent forms ouais", studentForms)
+          setForms(studentForms || []);
+        } catch (err) {
+          console.error("Erreur lors de la récupération des formulaires :", err);
+        }
+      };
+      fetchStudentForms();
+    }
+  }, [fetchFormsForStudent, user]);
 
   if (!user && !authLoading) {
     router.push("/");
     return null;
   }
-  
 
-  // TODO : 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <Navbar role="STUDENT" />
       <div className="flex space-x-6">
         <StudentCard
           firstName={student?.fname}
           lastName={student?.lname}
           className={student?.master}
         />
-        <div className="w-3/4 space-y-4">
-          {evaluations.map((evaluation: Evaluation) => (
-            <EvaluationCard
-              key={evaluation.id}
-              title={evaluation.title}
-              teacherName={evaluation.professor}
-              dueDate={evaluation.deadline}
-            />
+        <div className="w-3/4 space-y-4 ">
+          <h2 className="text-xl font-bold">Formulaires</h2>
+          {forms.length === 0 && <p>Aucun formulaire à afficher pour le moment.</p>}
+          {forms.map((form) => (
+            <div key={form.id} className="bg-white p-4 shadow-lg rounded-lg flex flex-col">
+              <h3 className="text-lg font-bold mb-3">{form.title}</h3>
+              <h2 className="text-lg mb-3"> Mr. {form.teacherName}</h2>
+              <span
+                className={`inline-block px-2 py-1 text-sm font-semibold rounded-full ${
+                  form.isCompleted ? "bg-green-100 text-green-800" : "bg-red-100 text-yellow-800"
+                }`}
+              >
+                {form.isCompleted ? (
+                  <>
+                    <CheckCircleIcon sx={{ fontSize: 18, color: 'green' }} />
+                    <span className="ml-2">Rempli</span>
+                  </>
+                ) : (
+                  <>
+                    <HourglassEmptyIcon sx={{ fontSize: 18, color: 'red' }} />
+                    <span className="ml-2">Non rempli</span>
+                  </>
+                )}
+              </span>
+              <Link href={`forms/${form.id}`} replace>
+                <p className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-md">{form.isCompleted ? 'Voir le formulaire' : 'Remplir le questionnaire'}</p>
+              </Link>
+            </div>
           ))}
         </div>
       </div>

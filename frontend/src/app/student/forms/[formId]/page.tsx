@@ -1,26 +1,32 @@
-'use client'
+"use client"
+
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // Import du router
-import { useAuth } from '@/hooks/useAuth'; // Assure-toi que tu as ce hook
+import { useRouter } from 'next/navigation'; 
+import { useAuth } from '@/hooks/useAuth';
 import { useFormQuestions } from '@/hooks/useFormQuestions';
 import { useQuestion } from '@/hooks/useQuestion';
-import { useReview } from '@/hooks/useReview'; // Assure-toi que ce hook existe
+import { useReview } from '@/hooks/useReview'; 
+import axios from 'axios';
+import { Question } from '@/types/Question';
+import { EnrichedQuestion } from '@/types/EnrichedQuestion';
+import { ReviewData } from '@/types/ReviewData';
+import { ReviewsDictionary } from '@/types/ReviewDictionary';
 
-const FormQuestionsPage = ({ params }: { params: Promise<{ formId: string }> }) => {
-  const router = useRouter(); // Initialisation du router
-  const { user } = useAuth(); // Récupère l'utilisateur connecté
-  const [formId, setFormId] = useState<string>('');
-  const [combinedQuestions, setCombinedQuestions] = useState<any[]>([]);
+const FormQuestionsPage = ({ params }: { params: { formId: string } }) => {
+  const router = useRouter(); 
+  const { user } = useAuth(); 
+  const [combinedQuestions, setCombinedQuestions] = useState<EnrichedQuestion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isEnriched, setIsEnriched] = useState(false);
-  const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null); // Message de confirmation
-  const [reviews, setReviews] = useState<{ [key: string]: { answer: number; commentary?: string } }>({}); // Suivi des réponses et commentaires
-  const [submitError, setSubmitError] = useState<string | null>(null); // Message d'erreur pour la soumission
+  const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null); 
+  const [reviews, setReviews] = useState<{ [key: string]: { answer: number; commentary?: string } }>({}); 
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const { fetchQuestionsByFormId } = useFormQuestions();
   const { fetchQuestionContentById } = useQuestion();
   const { createReview } = useReview(); // Hook pour créer la review
+  const formId = params.formId; // Accéder directement à l'ID
 
   // Charger les questions à la construction du composant
   useEffect(() => {
@@ -34,20 +40,21 @@ const FormQuestionsPage = ({ params }: { params: Promise<{ formId: string }> }) 
         const formQuestions = await fetchQuestionsByFormId(formId);
         if (formQuestions && formQuestions.length > 0) {
           const enrichedQuestions = await Promise.all(
-            formQuestions.map(async (formQuestion: any) => {
+            formQuestions.map(async (formQuestion: Question) => {
               const content = await fetchQuestionContentById(formQuestion.id);
               return {
                 ...formQuestion,
-                content: content || formQuestion.content,
-              };
+                content: content || formQuestion.content, 
+              } as EnrichedQuestion;
             })
           );
-          setCombinedQuestions(enrichedQuestions); // Mettre à jour l'état des questions
-          setIsEnriched(true); // Marquer l'enrichissement comme terminé
+          setCombinedQuestions(enrichedQuestions);
+          setIsEnriched(true);
         } else {
           setError('No questions found.');
         }
       } catch (err: unknown) {
+        console.log('Erreur de chargement', err)
         setError('Failed to load questions. Please try again.');
       } finally {
         setLoading(false);
@@ -59,15 +66,28 @@ const FormQuestionsPage = ({ params }: { params: Promise<{ formId: string }> }) 
     }
   }, [formId, fetchQuestionsByFormId, fetchQuestionContentById, isEnriched]);
 
-  // Résoudre le `formId` depuis `params`
   useEffect(() => {
-    const resolveParams = async () => {
-      const resolvedParams = await params;
-      setFormId(resolvedParams.formId);
+    const loadStudentFormResponse = async () => {
+      if (user?.id && formId) {
+        try {
+          const { data } = await axios.get(`/api/forms/responses/${user.id}/${formId}`);
+          if (data) {
+            // Si une réponse existe déjà, remplir les réponses et commentaires
+            const updatedReviews = data.reduce((acc: ReviewsDictionary, review: ReviewData) => {
+              acc[review.question_id] = { answer: review.answer, commentary: review.commentary };
+              return acc;
+            }, {});
+            setReviews(updatedReviews);
+          }
+        } catch (err) {
+          console.log("Erreur de chargement de students responses", err)
+          setError('Failed to load student responses.');
+        }
+      }
     };
 
-    resolveParams();
-  }, [params]);
+    loadStudentFormResponse();
+  }, [user?.id, formId]);
 
   // Mettre à jour les réponses et commentaires de chaque question
   const handleAnswerChange = (questionId: string, answer: number, commentary: string) => {
@@ -104,19 +124,18 @@ const FormQuestionsPage = ({ params }: { params: Promise<{ formId: string }> }) 
     }));
 
     try {
-      // Soumettre toutes les reviews d'un coup
       for (const reviewData of reviewsToSubmit) {
         await createReview(reviewData);
       }
       setConfirmationMessage('Your reviews have been submitted successfully!');
-      setSubmitError(null); // Clear any previous errors
+      setSubmitError(null); 
 
-      // Réinitialiser le message après 3 secondes, puis rediriger
       setTimeout(() => {
         setConfirmationMessage(null);
-        router.push('/'); // Redirige vers la racine de localhost:3500/
+        router.push('/');
       }, 3000);
     } catch (err) {
+      console.log("error", err)
       setSubmitError('Error submitting reviews. Please try again.');
     }
   };
@@ -147,6 +166,7 @@ const FormQuestionsPage = ({ params }: { params: Promise<{ formId: string }> }) 
                   type="number"
                   min="1"
                   max="5"
+                  value={reviews[question.id]?.answer || ''}
                   onChange={(e) => {
                     const answer = parseInt(e.target.value, 10);
                     handleAnswerChange(question.id, answer, reviews[question.id]?.commentary || '');

@@ -111,6 +111,135 @@ export class FormsService {
       throw new Error('Failed to update form');
     }
   }
+
+  async getStudentFormResponse(studentId: string, formId: string) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('StudentFormResponse') 
+        .select('*')
+        .eq('student_id', studentId)
+        .eq('form_id', formId)
+        .single(); 
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    } catch (err) {
+      console.error('Erreur lors de la récupération de la réponse:', err);
+      throw err;
+    }
+  }
+
+  async getFormsForStudent(studentId: string) {
+    try {
+      // Récupérer les formulaires associés à l'étudiant via la table d'inscription (Enrollment)
+      const { data: forms, error: formsError } = await supabaseClient
+        .from('Form')
+        .select('id, courseId, adminId')
+  
+      if (formsError) {
+        console.error('Erreur lors de la récupération des formulaires :', formsError);
+        throw new Error('Impossible de récupérer les formulaires.');
+      }
+  
+      // Étape 2 : Récupérer les noms des cours et les informations des professeurs en une seule requête
+      const courseIds = forms.map(form => form.courseId);
+      const { data: courses, error: coursesError } = await supabaseClient
+        .from('Course')
+        .select('id, name, teacherId')
+        .in('id', courseIds);
+
+        console.log("AH OUAIS LE FORM ENRICHI", courses)
+  
+      if (coursesError) {
+        console.error('Erreur lors de la récupération des cours :', coursesError);
+        throw new Error('Impossible de récupérer les cours.');
+      }
+  
+      // Récupérer les informations des professeurs associés aux cours
+      const teacherIds = courses.map(course => course.teacherId);
+      const { data: teachers, error: teachersError } = await supabaseClient
+        .from('Teacher')
+        .select('id, fname, lname')
+        .in('id', teacherIds);
+
+        console.log("AH OUAIS LE FORM ENRICHI", teachers)
+  
+      if (teachersError) {
+        console.error('Erreur lors de la récupération des professeurs :', teachersError);
+        throw new Error('Impossible de récupérer les professeurs.');
+      }
+  
+      // Joindre les informations des cours et des professeurs avec les formulaires
+      const formsWithDetails = forms.map(form => {
+        const course = courses.find(c => c.id === form.courseId);
+        const teacher = teachers.find(t => t.id === course?.teacherId);
+        return {
+          ...form,
+          title: course?.name || 'Sans titre',
+          teacherName: teacher ? `${teacher.fname} ${teacher.lname}` : 'Professeur inconnu',
+        };
+      });
+  
+      return formsWithDetails;
+  
+    } catch (err) {
+      console.error('Erreur serveur :', err);
+      throw new Error('Erreur serveur. Veuillez réessayer plus tard.');
+    }
+  }
+
+  async getFormResponsesForStudent(studentId: string) {
+    try {
+      // Récupérer les réponses du formulaire pour l'étudiant
+      const { data, error } = await supabaseClient
+        .from('StudentFormResponse')
+        .select('formId, isCompleted')
+        .eq('studentId', studentId);
+  
+      if (error) {
+        console.error('Erreur lors de la récupération des réponses :', error);
+        throw new Error('Impossible de récupérer les réponses.');
+      }
+  
+      return data;
+    } catch (err) {
+      console.error('Erreur serveur :', err);
+      throw new Error('Erreur serveur. Veuillez réessayer plus tard.');
+    }
+  }
+
+  async getFormsForStudentWithResponses(studentId: string) {
+    try {
+      // Récupérer les formulaires associés à l'étudiant
+      const forms = await this.getFormsForStudent(studentId);
+      console.log("forms associés à l'etudiant" ,forms)
+      
+      // Récupérer les réponses associées
+      const formResponses = await this.getFormResponsesForStudent(studentId);
+      console.log("réponses associés", formResponses);
+  
+      // Associer les réponses aux formulaires
+      const formsWithResponses = forms.map(form => {
+        const response = formResponses.find(r => r.formId === form.id);
+        return {
+          ...form,
+          isCompleted: response ? response.isCompleted : null,
+        };
+      });
+  
+      // Filtrer les formulaires non remplis ou incomplets
+      const incompleteForms = formsWithResponses.filter(form => form.isCompleted === false || form.isCompleted === null);
+  
+      return incompleteForms;
+  
+    } catch (err) {
+      console.error('Erreur serveur :', err);
+      throw new Error('Erreur serveur. Veuillez réessayer plus tard.');
+    }
+  }
 }
 
   

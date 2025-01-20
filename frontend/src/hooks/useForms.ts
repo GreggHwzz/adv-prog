@@ -1,20 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import axios from 'axios';
+import { Form } from '@/types/Form';
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-
-interface Form {
-  id: string;
-  courseId: string;
-  adminId: string;
-}
 
 interface UseFormsReturn {
   forms: Form[];
   loading: boolean;
   error: string | null;
   fetchForms: (adminId?: string, courseId?: string) => Promise<void>;
+  fetchFormsForStudent :  (studentId: string) => Promise<Form[]>
 }
+
+type FetchFormsParams = {
+  adminId?: string;
+  courseId?: string;
+};
 
 export const useForms = (): UseFormsReturn & { deleteForm: (formId: string) => Promise<void> } => {
   const [forms, setForms] = useState<Form[]>([]);
@@ -26,7 +27,7 @@ export const useForms = (): UseFormsReturn & { deleteForm: (formId: string) => P
     setError(null);
 
     try {
-      const params: any = {};
+      const params : FetchFormsParams = {};
       if (adminId) params.adminId = adminId;
       if (courseId) params.courseId = courseId;
 
@@ -47,7 +48,7 @@ export const useForms = (): UseFormsReturn & { deleteForm: (formId: string) => P
 
     try {
       await axios.delete(`${backendUrl}/forms/delete/${formId}`);
-      setForms((prevForms) => prevForms.filter((form) => form.id !== formId)); // Mettre à jour localement
+      setForms((prevForms) => prevForms.filter((form) => form.id !== formId)); 
     } catch (err: unknown) {
       console.error('Error deleting form:', err);
       setError((err as Error).message);
@@ -56,11 +57,29 @@ export const useForms = (): UseFormsReturn & { deleteForm: (formId: string) => P
     }
   };
 
+  const fetchFormsForStudent = useCallback(
+    async (studentId: string): Promise<Form[]> => {
+      setLoading(true);
+      try {
+        const { data } = await axios.get(`${backendUrl}/forms/student/${studentId}`);
+        return data;
+      } catch (error) {
+        console.error("Erreur lors de la récupération des formulaires", error);
+        return [];
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+
   return {
     forms,
     loading,
     error,
     fetchForms,
     deleteForm,
+    fetchFormsForStudent,
   };
 };

@@ -37,4 +37,17 @@ export class FormsController {
   ) {
     return await this.formsService.updateForm(id, updatedData);
   }
+
+  @Get('responses/:studentId/:formId')
+  async getStudentFormResponse(
+    @Param('studentId') studentId: string,
+    @Param('formId') formId: string
+  ) {
+    return this.formsService.getStudentFormResponse(studentId, formId);
+  }
+
+  @Get('student/:studentId')
+  async getFormsForStudent(@Param('studentId') studentId: string) {
+    return await this.formsService.getFormsForStudent(studentId);
+  }
 }

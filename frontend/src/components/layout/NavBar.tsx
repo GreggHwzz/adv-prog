@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react";
-import { usePathname, useRouter } from 'next/navigation'; // Importer usePathname
+import { usePathname, useRouter } from 'next/navigation';
 import Link from "next/link";
 import { HiChevronDown } from "react-icons/hi";
 import Notifications from "../common/Notifications";
-import { useAuth } from "@/hooks/useAuth";  // Importer le hook useAuth
+import { useAuth } from "@/hooks/useAuth"; 
 
 interface NavbarProps {
   role: "ADMIN" | "TEACHER" | "STUDENT";
@@ -13,9 +13,9 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const pathname = usePathname(); // Récupérer le chemin actuel
-  const { logout, role } = useAuth();  // Utiliser le hook useAuth à l'intérieur du composant
-  const router = useRouter();  // Initialiser le routeur
+  const pathname = usePathname();
+  const { logout, role } = useAuth(); 
+  const router = useRouter();
 
   const getNavLinks = (role: "ADMIN" | "TEACHER" | "STUDENT") => {
     const baseUrl = (() => {

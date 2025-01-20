@@ -1,7 +1,9 @@
 
 export interface Form {
-    id: number;
+    id: string;
+    courseId: string;
+    adminId: string;
     title: string;
-    subject: string;
-    teacherName: string;
+    teacherName : string;
+    isCompleted : boolean;
 }
