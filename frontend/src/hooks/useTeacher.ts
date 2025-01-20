@@ -28,6 +28,7 @@ export const useTeacher = (): UseTeachersReturn => {
       const response = await axios.get<Teacher[]>(`${backendUrl}/teachers`);
       setTeachers(response.data);
     } catch (err: unknown) {
+      console.log("erreur teacher", err)
       console.error('Error fetching teachers:', err);
       setError((err as Error).message);
     } finally {

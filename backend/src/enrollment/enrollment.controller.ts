@@ -26,4 +26,16 @@ export class EnrollmentController {
       updatedData
     );
   }
+
+  @Post('enroll')
+  async enrollStudent(@Body() body: { studentId: string, courseId: string }) {
+    const { studentId, courseId } = body;
+
+    try {
+      const enrollment = await this.formQuestionsService.enrollStudentToCourse(studentId, courseId);
+      return { message: 'Inscription réussie', data: enrollment };
+    } catch (error) {
+      return { message: 'Échec de l\'inscription', error: error.message };
+    }
+  }
 }

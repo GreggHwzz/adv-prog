@@ -48,7 +48,7 @@ export class StudentsService {
   async createStudent(student: any) {
     console.log('Received student data:', student); 
 
-    const { fname, lname, email, password, userRole } = student;
+    const { fname, lname, master, email, password, userRole } = student;
   
     const { data: userResponse, error } = await supabaseClient.auth.signUp({
       email,
@@ -66,7 +66,7 @@ export class StudentsService {
 
     const { data, error: studentError } = await supabaseClient
       .from('Student')
-      .insert([{ fname, lname, email, student ,id: userResponse.user.id }]);
+      .insert([{ fname, lname, email, master ,id: userResponse.user.id }]);
 
     if (studentError) {
       await supabaseClient.auth.admin.deleteUser(userResponse.user.id); // pour la précision ici je delete le user si l'insertion se passe mal

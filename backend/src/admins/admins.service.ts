@@ -48,17 +48,34 @@ export class AdminsService {
   async createAdmin(admin: any) {
     console.log('Received admin data:', admin); 
   
-    const { data, error } = await supabaseClient
-      .from('Admin')
-      .insert([admin]);
+    const { fname, lname, email, password, userRole } = admin;
   
+    const { data: userResponse, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          userrole: userRole,
+          email_verified : true,
+        },
+      },
+    });
+
     if (error) {
-      console.error('Failed to create admin:', error);
-      throw new Error('Failed to create admin');
+      throw new Error(`Erreur lors de la création de l'utilisateur : ${error.message}`);
     }
-  
-    console.log('Inserted admin data:', data);
-    return data;
+
+    const { data, error: adminError } = await supabaseClient
+      .from('Admin')
+      .insert([{ fname, lname, id: userResponse.user.id }]);
+
+    if (adminError) {
+      await supabaseClient.auth.admin.deleteUser(userResponse.user.id); // pour la précision ici je delete le user si l'insertion se passe mal
+      console.log("Erreur a l'insertion -> ", adminError)
+      throw new Error('Erreur lors de l\'insertion dans la table Student');
+    }
+
+    return { userResponse, data };
   }
 
   async deleteAdmin(admin: any) {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Admin } from "@/types/Admin";
+import { toast } from "react-toastify";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -16,6 +17,7 @@ interface UseAdminsReturn {
     updatedData: Partial<Admin>,
   ) => Promise<Admin | undefined>;
   deleteAdmin: (id: string) => Promise<void>;
+  enrollStudentInCourse : (studentId: string, courseId: string) => Promise<void>;
 }
 
 export const useAdmin = (): UseAdminsReturn => {
@@ -110,6 +112,30 @@ export const useAdmin = (): UseAdminsReturn => {
     }
   };
 
+  const enrollStudentInCourse = async (studentId: string, courseId: string) => {
+    setLoading(true);
+    try {
+      const response = await axios.post(`${backendUrl}/enrollment/enroll`, {
+        studentId,
+        courseId,
+      });
+
+      if (response.status === 201) {
+        toast.success("Étudiant inscrit avec succès !");
+      } else {
+        throw new Error("Erreur lors de l'inscription");
+      }
+    } catch (err) {
+      setError("Erreur lors de l'inscription.");
+      toast.error("Erreur lors de l'inscription.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
+
   useEffect(() => {
     fetchAdmins(); // Fetch all admins on component mount
   }, []);
@@ -123,5 +149,6 @@ export const useAdmin = (): UseAdminsReturn => {
     createAdmin,
     updateAdmin,
     deleteAdmin,
+    enrollStudentInCourse,
   };
 };

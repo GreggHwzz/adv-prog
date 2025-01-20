@@ -34,6 +34,7 @@ export const useStudent = (): UseStudentsReturn => {
       const response = await axios.get<Student[]>(`${backendUrl}/students`);
       setStudents(response.data);
     } catch (err: unknown) {
+      console.log("erreur student", err)
       console.error("Error fetching students:", err);
       setError((err as Error).message);
     } finally {

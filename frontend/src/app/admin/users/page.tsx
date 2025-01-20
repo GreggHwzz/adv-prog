@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useStudent } from "@/hooks/useStudent";
 import { useTeacher } from "@/hooks/useTeacher";
 import UserFormModal from "@/components/admin/FormModal";
+import EnrollmentModal from "@/components/admin/EnrollmentModal";
 import {
   Button,
   Table,
@@ -25,9 +26,15 @@ const UserManagementPage: React.FC = () => {
   const { teachers, loading: loadingTeachers, deleteTeacher } = useTeacher();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEnrollmentModalOpen, setIsEnrollmentModalOpen] = useState(false);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
+  };
+
+
+  const handleOpenEnrollmentModal = () => {
+    setIsEnrollmentModalOpen(true);
   };
 
   const handleDeleteUser = async (id: string, role: "admin" | "student" | "teacher") => {
@@ -100,6 +107,15 @@ const UserManagementPage: React.FC = () => {
         >
           Ajouter un utilisateur
         </Button>
+
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ boxShadow: 2 }}
+          onClick={handleOpenEnrollmentModal}
+        >
+          Inscrire un étudiant à un cours
+        </Button>
       </Box>
 
       {/* Chargement ou affichage des données */}
@@ -125,6 +141,12 @@ const UserManagementPage: React.FC = () => {
       <UserFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+      />
+
+      {/* Modal pour inscrire un étudiant */}
+      <EnrollmentModal
+        isOpen={isEnrollmentModalOpen}
+        onClose={() => setIsEnrollmentModalOpen(false)}
       />
     </Box>
     

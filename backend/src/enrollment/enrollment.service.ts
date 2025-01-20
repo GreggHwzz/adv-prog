@@ -62,4 +62,47 @@ export class EnrollmentService {
       throw new Error('Failed to update enrollment association');
     }
   }
+
+  // Méthode pour inscrire un étudiant à un cours
+  async enrollStudentToCourse(studentId: string, courseId: string) {
+    try {
+      console.log('Attempting to enroll student to course...', { studentId, courseId });
+
+      
+      const { data: studentData, error: studentError } = await supabaseClient
+        .from('Student') 
+        .select('id')
+        .eq('id', studentId)
+        .single();
+
+      if (studentError || !studentData) {
+        throw new Error('Étudiant non trouvé');
+      }
+
+      const { data: courseData, error: courseError } = await supabaseClient
+        .from('Course')
+        .select('id')
+        .eq('id', courseId)
+        .single();
+
+      if (courseError || !courseData) {
+        throw new Error('Cours non trouvé');
+      }
+
+      const { data, error } = await supabaseClient
+        .from('Enrollment')
+        .insert([{ studentId, courseId }]);
+
+      if (error) {
+        console.error('Erreur lors de l\'inscription de l\'étudiant au cours:', error);
+        throw new Error('Erreur lors de l\'inscription');
+      }
+
+      console.log('Inscription réussie:', data);
+      return data;
+    } catch (err) {
+      console.error('Erreur interne lors de l\'inscription de l\'étudiant:', err);
+      throw new Error('Échec de l\'inscription');
+    }
+  }
 }
