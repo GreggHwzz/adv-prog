@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useStudent } from "@/hooks/useStudent";
 import { useForms } from "@/hooks/useForms"; 
+import useStudentFormResponse from "@/hooks/useStudentFormResponse"; // Import du hook pour récupérer les réponses
 import StudentCard from "@/components/student/StudentCard";
 import { Form } from "@/types/Form";
 import Link from "next/link";
@@ -12,12 +14,11 @@ import { Student } from "@/types/Student";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty'
 
-
 const StudentDashboard: React.FC = () => {
-
   const { user, loading: authLoading } = useAuth();
   const { fetchStudentById } = useStudent();
   const { fetchFormsForStudent } = useForms();  
+  const { fetchStudentFormResponse } = useStudentFormResponse(); // Hook pour récupérer les réponses
   const [student, setStudent] = useState<Student | null>(null); 
   const [forms, setForms] = useState<Form[]>([]); 
   const router = useRouter();
@@ -41,8 +42,22 @@ const StudentDashboard: React.FC = () => {
       const fetchStudentForms = async () => {
         try {
           const studentForms = await fetchFormsForStudent(user.id);
-          console.log("sudent forms ouais", studentForms)
+
+          console.log("STUDENT FORMS", studentForms)
+
+          // Vérifier l'état de chaque formulaire (s'il est complété)
+          const formsWithStatus = await Promise.all(
+            studentForms.map(async (form) => {
+              const response = await fetchStudentFormResponse(user.id, form.id);
+              return {
+                ...form,
+                isCompleted: response ? response.isValid : false, // Si la réponse existe, on la marque comme remplie
+              };
+            })
+          );
+          console.log("FOR STATUUUUUUUUUUUUUT", formsWithStatus)
           setForms(studentForms || []);
+          
         } catch (err) {
           console.error("Erreur lors de la récupération des formulaires :", err);
         }

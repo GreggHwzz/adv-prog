@@ -11,8 +11,13 @@ import { Question } from '@/types/Question';
 import { EnrichedQuestion } from '@/types/EnrichedQuestion';
 import { ReviewData } from '@/types/ReviewData';
 import { ReviewsDictionary } from '@/types/ReviewDictionary';
+import Loader from '@/components/common/Loader';
+import { Box, Typography, TextField, Button, Grid, Snackbar } from '@mui/material';
+import { toast, ToastContainer } from 'react-toastify';
 
-const FormQuestionsPage = ({ params }: { params: { formId: string } }) => {
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+
+const FormQuestionsPage = ({ params: paramsPromise }: { params: Promise<{ formId: string }> }) => {
   const router = useRouter(); 
   const { user } = useAuth(); 
   const [combinedQuestions, setCombinedQuestions] = useState<EnrichedQuestion[]>([]);
@@ -26,7 +31,18 @@ const FormQuestionsPage = ({ params }: { params: { formId: string } }) => {
   const { fetchQuestionsByFormId } = useFormQuestions();
   const { fetchQuestionContentById } = useQuestion();
   const { createReview } = useReview(); // Hook pour créer la review
-  const formId = params.formId; // Accéder directement à l'ID
+  const [formId, setFormId] = useState<string | null>(null);
+
+  // Extract formId from the Promise-based params
+  useEffect(() => {
+    paramsPromise
+      .then((params) => {
+        setFormId(params.formId);
+      })
+      .catch(() => {
+        setError("Failed to retrieve form ID.");
+      });
+  });
 
   // Charger les questions à la construction du composant
   useEffect(() => {
@@ -44,35 +60,35 @@ const FormQuestionsPage = ({ params }: { params: { formId: string } }) => {
               const content = await fetchQuestionContentById(formQuestion.id);
               return {
                 ...formQuestion,
-                content: content || formQuestion.content, 
+                content: content || formQuestion.content,
               } as EnrichedQuestion;
             })
           );
           setCombinedQuestions(enrichedQuestions);
           setIsEnriched(true);
         } else {
-          setError('No questions found.');
+          setError("No questions found.");
         }
       } catch (err: unknown) {
-        console.log('Erreur de chargement', err)
-        setError('Failed to load questions. Please try again.');
+        console.log("Erreur de chargement", err);
+        setError("Failed to load questions. Please try again.");
       } finally {
         setLoading(false);
       }
     };
 
-    if (!isEnriched) {
+    if (formId && !isEnriched) {
       loadQuestions();
     }
   }, [formId, fetchQuestionsByFormId, fetchQuestionContentById, isEnriched]);
 
+  // Charger les réponses existantes de l'étudiant
   useEffect(() => {
     const loadStudentFormResponse = async () => {
       if (user?.id && formId) {
         try {
-          const { data } = await axios.get(`/api/forms/responses/${user.id}/${formId}`);
+          const { data } = await axios.get(`${backendUrl}/forms/responses/${user.id}/${formId}`);
           if (data) {
-            // Si une réponse existe déjà, remplir les réponses et commentaires
             const updatedReviews = data.reduce((acc: ReviewsDictionary, review: ReviewData) => {
               acc[review.question_id] = { answer: review.answer, commentary: review.commentary };
               return acc;
@@ -80,8 +96,9 @@ const FormQuestionsPage = ({ params }: { params: { formId: string } }) => {
             setReviews(updatedReviews);
           }
         } catch (err) {
-          console.log("Erreur de chargement de students responses", err)
-          setError('Failed to load student responses.');
+          console.log("Erreur de chargement de students responses", err);
+          toast.error("Echec de chargement des réponses !");
+          setError("Failed to load student responses.");
         }
       }
     };
@@ -127,12 +144,29 @@ const FormQuestionsPage = ({ params }: { params: { formId: string } }) => {
       for (const reviewData of reviewsToSubmit) {
         await createReview(reviewData);
       }
+
+      const studentFormResponse = {
+        studentId: user.id,
+        formId,
+        isValid: true,
+        isCompleted: true, 
+        feedback: 'Feedback received',
+        submittedAt: new Date().toISOString(),
+      };
+
+      const response = await axios.post(
+        `${backendUrl}/forms/submit-response/${user.id}/${formId}`,
+        studentFormResponse
+      );
+
+      console.log('Réponse soumise avec succès', response.data);
+
       setConfirmationMessage('Your reviews have been submitted successfully!');
       setSubmitError(null); 
 
       setTimeout(() => {
         setConfirmationMessage(null);
-        router.push('/');
+        router.push('/student/dashboard');
       }, 3000);
     } catch (err) {
       console.log("error", err)
@@ -142,55 +176,81 @@ const FormQuestionsPage = ({ params }: { params: { formId: string } }) => {
 
   // Affichage des états de chargement et d'erreur
   if (loading) {
-    return <p>Loading questions...</p>;
+    return <Loader/>;
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return <Typography color="error">{error}</Typography>;
   }
 
   return (
-    <div>
-      <h1>Form Questions</h1>
-      {confirmationMessage && <p style={{ color: 'green' }}>{confirmationMessage}</p>}
-      {submitError && <p style={{ color: 'red' }}>{submitError}</p>} {/* Affichage du message d'erreur */}
+    <Box sx={{ padding: 3 }}>
+      <Typography variant="h4" gutterBottom>Form Questions</Typography>
+      {confirmationMessage && (
+        <Snackbar
+          open={true}
+          message={confirmationMessage}
+          autoHideDuration={3000}
+          onClose={() => setConfirmationMessage(null)}
+        />
+      )}
+      {submitError && (
+        <Typography color="error" sx={{ marginBottom: 2 }}>
+          {submitError}
+        </Typography>
+      )}
 
-      <ul>
+      <Grid container spacing={3}>
         {combinedQuestions.map((question) => (
-          <li key={question.id}>
-            <strong>{question.content}</strong>
-            <div>
-              <label>
-                Rating (1-5):
-                <input
+          <Grid item xs={12} sm={6} md={4} key={question.id}>
+            <Box sx={{ padding: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+              <Typography variant="h6">{question.content}</Typography>
+              <Box sx={{ marginTop: 2 }}>
+                <TextField
+                  label="Rating (1-5)"
                   type="number"
-                  min="1"
-                  max="5"
+                  InputProps={{
+                    inputProps: { min: 1, max: 5 }
+                  }}
+                  fullWidth
                   value={reviews[question.id]?.answer || ''}
                   onChange={(e) => {
                     const answer = parseInt(e.target.value, 10);
                     handleAnswerChange(question.id, answer, reviews[question.id]?.commentary || '');
                   }}
                 />
-              </label>
-            </div>
-            <div>
-              <label>
-                Commentary:
-                <textarea
+              </Box>
+              <Box sx={{ marginTop: 2 }}>
+                <TextField
+                  label="Commentary"
+                  multiline
+                  rows={4}
+                  fullWidth
                   value={reviews[question.id]?.commentary || ''}
                   onChange={(e) => {
                     const commentary = e.target.value;
                     handleAnswerChange(question.id, reviews[question.id]?.answer || 1, commentary);
                   }}
                 />
-              </label>
-            </div>
-          </li>
+              </Box>
+            </Box>
+          </Grid>
         ))}
-      </ul>
-      <button onClick={handleSubmitReviews}>Submit All Reviews</button>
-    </div>
+        <ToastContainer />
+      </Grid>
+
+      <Box sx={{ marginTop: 3 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmitReviews}
+          fullWidth
+        >
+          Submit All Reviews
+        </Button>
+      </Box>
+    </Box>
+    
   );
 };
 

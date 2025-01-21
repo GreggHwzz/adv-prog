@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+
 const useStudentFormResponse = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -9,7 +11,7 @@ const useStudentFormResponse = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`/api/forms/responses/${studentId}/${formId}`);
+      const response = await axios.get(`${backendUrl}/forms/responses/${studentId}/${formId}`);
       return response.data;
     } catch (err) {
       setError("Erreur lors de la récupération des réponses.");

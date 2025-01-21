@@ -117,8 +117,8 @@ export class FormsService {
       const { data, error } = await supabaseClient
         .from('StudentFormResponse') 
         .select('*')
-        .eq('student_id', studentId)
-        .eq('form_id', formId)
+        .eq('studentid', studentId)
+        .eq('formid', formId)
         .single(); 
 
       if (error) {
@@ -137,7 +137,7 @@ export class FormsService {
       // Récupérer les formulaires associés à l'étudiant via la table d'inscription (Enrollment)
       const { data: forms, error: formsError } = await supabaseClient
         .from('Form')
-        .select('id, courseId, adminId')
+        .select('id, courseId, adminId');
   
       if (formsError) {
         console.error('Erreur lors de la récupération des formulaires :', formsError);
@@ -150,8 +150,6 @@ export class FormsService {
         .from('Course')
         .select('id, name, teacherId')
         .in('id', courseIds);
-
-        console.log("AH OUAIS LE FORM ENRICHI", courses)
   
       if (coursesError) {
         console.error('Erreur lors de la récupération des cours :', coursesError);
@@ -164,22 +162,34 @@ export class FormsService {
         .from('Teacher')
         .select('id, fname, lname')
         .in('id', teacherIds);
-
-        console.log("AH OUAIS LE FORM ENRICHI", teachers)
   
       if (teachersError) {
         console.error('Erreur lors de la récupération des professeurs :', teachersError);
         throw new Error('Impossible de récupérer les professeurs.');
       }
   
-      // Joindre les informations des cours et des professeurs avec les formulaires
+      // Récupérer les réponses de l'étudiant (complétion du formulaire)
+      const { data: studentResponses, error: responsesError } = await supabaseClient
+        .from('StudentFormResponse')
+        .select('formid, iscompleted')
+        .eq('studentid', studentId);
+  
+      if (responsesError) {
+        console.error('Erreur lors de la récupération des réponses de l\'étudiant :', responsesError);
+        throw new Error('Impossible de récupérer les réponses de l\'étudiant.');
+      }
+  
+      // Joindre les informations des cours, des professeurs, et des réponses avec les formulaires
       const formsWithDetails = forms.map(form => {
         const course = courses.find(c => c.id === form.courseId);
         const teacher = teachers.find(t => t.id === course?.teacherId);
+        const formResponse = studentResponses.find(response => response.formid === form.id);
+  
         return {
           ...form,
           title: course?.name || 'Sans titre',
           teacherName: teacher ? `${teacher.fname} ${teacher.lname}` : 'Professeur inconnu',
+          isCompleted: formResponse?.iscompleted || false, // Ajout de l'information de complétion
         };
       });
   
@@ -238,6 +248,35 @@ export class FormsService {
     } catch (err) {
       console.error('Erreur serveur :', err);
       throw new Error('Erreur serveur. Veuillez réessayer plus tard.');
+    }
+  }
+
+  async submitStudentFormResponse(studentid: string, formid: string, feedback: string, iscompleted: boolean) {
+    try {
+      console.log('Received student response:', { studentid, formid, feedback, iscompleted });
+  
+      const { data, error } = await supabaseClient
+        .from('StudentFormResponse')
+        .insert([
+          {
+            studentid,
+            formid,
+            feedback,
+            iscompleted,
+            submittedat: new Date().toISOString(), // Date de soumission
+          }
+        ]) // Si un enregistrement existe déjà pour cet étudiant et ce formulaire, il sera mis à jour
+  
+      if (error) {
+        console.error('Failed to submit response:', error);
+        throw new Error('Failed to submit student response');
+      }
+  
+      console.log('Student response submitted successfully:', data);
+      return data;
+    } catch (err) {
+      console.error('Error submitting student response:', err);
+      throw new Error('Failed to submit student response');
     }
   }
 }

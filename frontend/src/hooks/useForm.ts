@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import axios from 'axios';
 import { useQuestion } from './useQuestion'; // Importer le hook useQuestion
