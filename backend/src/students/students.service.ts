@@ -5,7 +5,7 @@ import { supabaseClient } from '../config/supabase';
 export class StudentsService {
   async getAllStudents() {
     try {
-      console.log('Attempting to fetch all students from Supabase...');
+
       
       const { data, error } = await supabaseClient
         .from('Student')
@@ -15,7 +15,7 @@ export class StudentsService {
         console.error('Supabase query error:', error);
         throw new Error(`Supabase query error: ${error.message}`);
       }
-      console.log('Fetched all students:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error fetching students:', err);
@@ -25,7 +25,7 @@ export class StudentsService {
 
   async getStudentById(filters: { id: string }) {
     try {
-      console.log('Attempting to fetch specific student from Supabase...');
+
       
       const { data, error } = await supabaseClient
         .from('Student')
@@ -37,7 +37,7 @@ export class StudentsService {
         console.error('Supabase query error:', error);
         throw new Error(`Supabase query error: ${error.message}`);
       }
-      console.log('Fetched specific student:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error fetching student:', err);
@@ -46,7 +46,7 @@ export class StudentsService {
   }
   
   async createStudent(student: any) {
-    console.log('Received student data:', student); 
+
 
     const { fname, lname, master, email, password, userRole } = student;
   
@@ -70,7 +70,7 @@ export class StudentsService {
 
     if (studentError) {
       await supabaseClient.auth.admin.deleteUser(userResponse.user.id); // pour la précision ici je delete le user si l'insertion se passe mal
-      console.log("Erreur a l'insertion -> ", studentError)
+
       throw new Error('Erreur lors de l\'insertion dans la table Student');
     }
 
@@ -78,7 +78,7 @@ export class StudentsService {
   }
 
   async deleteStudent(studentId: string) {
-    console.log('Received student id:', studentId); 
+
   
     const { data, error } = await supabaseClient
       .from('Student')
@@ -90,14 +90,14 @@ export class StudentsService {
       throw new Error('Failed to delete student');
     }
   
-    console.log('Deleted student data:', data);
+
     return data;
   }
 
   async updateStudent(studentId: string, updatedData: any) {
     try {
-      console.log('Received student ID:', studentId); 
-      console.log('Updated student data:', updatedData); // Debugging
+
+
   
       const { data, error } = await supabaseClient
         .from('Student')
@@ -109,7 +109,7 @@ export class StudentsService {
         throw new Error('Failed to update student');
       }
   
-      console.log('Updated student data:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error updating student:', err);

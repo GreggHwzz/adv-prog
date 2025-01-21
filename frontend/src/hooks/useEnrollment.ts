@@ -30,7 +30,7 @@ export const useEnrollment = (): UseEnrollmentReturn => {
         params: { studentId },
       });
       setEnrollments(response.data);
-      console.log('eee'+ response.data)
+
     } catch (err: unknown) {
       console.error('Error fetching enrollments:', err);
       setError((err as Error).message);

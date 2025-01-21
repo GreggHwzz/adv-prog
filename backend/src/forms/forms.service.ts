@@ -5,7 +5,7 @@ import { supabaseClient } from '../config/supabase';
 export class FormsService {
   async getAllForms(filters: { adminId?: string, courseId?: string}) {
     try {
-      console.log('Attempting to fetch filtered forms from Supabase...');
+
       
       let query = supabaseClient
         .from('Form')
@@ -24,7 +24,7 @@ export class FormsService {
         throw new Error(`Supabase query error: ${error.message}`);
       }
 
-      console.log('Fetched filtered forms:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error fetching forms:', err);
@@ -34,7 +34,7 @@ export class FormsService {
 
   async getFormById(filters: { id: string }) {
     try {
-      console.log('Attempting to fetch specific form from Supabase...');
+
       
       const { data, error } = await supabaseClient
         .from('Form')
@@ -46,7 +46,7 @@ export class FormsService {
         console.error('Supabase query error:', error);
         throw new Error(`Supabase query error: ${error.message}`);
       }
-      console.log('Fetched specific form:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error fetching form:', err);
@@ -55,7 +55,7 @@ export class FormsService {
   }
   
   async createForm(form: any) {
-    console.log('Received form data:', form); 
+
   
     const { data, error } = await supabaseClient
       .from('Form')
@@ -68,12 +68,12 @@ export class FormsService {
       throw new Error('Failed to create form');
     }
   
-    console.log('Inserted form data:', data);
+
     return data;
   }
 
   async deleteForm(formId: string) {
-    console.log('Received form id:', formId); 
+
   
     const { data, error } = await supabaseClient
       .from('Form')
@@ -85,14 +85,14 @@ export class FormsService {
       throw new Error('Failed to delete form');
     }
   
-    console.log('Deleted form data:', data);
+
     return data;
   }
 
   async updateForm(formId: string, updatedData: any) {
     try {
-      console.log('Received form ID:', formId); 
-      console.log('Updated form data:', updatedData); // Debugging
+
+
   
       const { data, error } = await supabaseClient
         .from('Form')
@@ -104,7 +104,7 @@ export class FormsService {
         throw new Error('Failed to update form');
       }
   
-      console.log('Updated form data:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error updating form:', err);
@@ -225,11 +225,11 @@ export class FormsService {
     try {
       // Récupérer les formulaires associés à l'étudiant
       const forms = await this.getFormsForStudent(studentId);
-      console.log("forms associés à l'etudiant" ,forms)
+
       
       // Récupérer les réponses associées
       const formResponses = await this.getFormResponsesForStudent(studentId);
-      console.log("réponses associés", formResponses);
+
   
       // Associer les réponses aux formulaires
       const formsWithResponses = forms.map(form => {
@@ -253,7 +253,7 @@ export class FormsService {
 
   async submitStudentFormResponse(studentid: string, formid: string, feedback: string, iscompleted: boolean) {
     try {
-      console.log('Received student response:', { studentid, formid, feedback, iscompleted });
+
   
       const { data, error } = await supabaseClient
         .from('StudentFormResponse')
@@ -272,7 +272,7 @@ export class FormsService {
         throw new Error('Failed to submit student response');
       }
   
-      console.log('Student response submitted successfully:', data);
+
       return data;
     } catch (err) {
       console.error('Error submitting student response:', err);

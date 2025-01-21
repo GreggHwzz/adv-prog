@@ -43,8 +43,6 @@ const StudentDashboard: React.FC = () => {
         try {
           const studentForms = await fetchFormsForStudent(user.id);
 
-          console.log("STUDENT FORMS", studentForms)
-
           // Vérifier l'état de chaque formulaire (s'il est complété)
           const formsWithStatus = await Promise.all(
             studentForms.map(async (form) => {
@@ -55,7 +53,7 @@ const StudentDashboard: React.FC = () => {
               };
             })
           );
-          console.log("FOR STATUUUUUUUUUUUUUT", formsWithStatus)
+
           setForms(studentForms || []);
           
         } catch (err) {
@@ -104,7 +102,8 @@ const StudentDashboard: React.FC = () => {
                 )}
               </span>
               <Link href={`forms/${form.id}`} replace>
-                <p className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-md">{form.isCompleted ? 'Voir le formulaire' : 'Remplir le questionnaire'}</p>
+              {!form.isCompleted ? (<p className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-md">Remplir le questionnaire</p>) : <></> }
+                
               </Link>
             </div>
           ))}

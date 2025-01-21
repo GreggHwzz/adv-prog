@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from '@/hooks/useAuth';
+import Image from 'next/image';
 
 const LoginPage = () => {
   const { signIn, user, role, loading, logout } = useAuth(); // Utilisation du hook
@@ -27,21 +28,23 @@ const LoginPage = () => {
     setError(null); // Réinitialiser l'erreur avant chaque tentative de connexion
 
     try {
-      const { user, token, role } = await signIn(email, password); // Appeler le hook signIn
+      const result = await signIn(email, password); // Appeler le hook signIn
 
-      if (user && token) {
-        if (role) {
-          console.log('Rôle de l\'utilisateur:', role);
-          // Redirection après que le rôle soit récupéré
-          router.push(`/${role.toString().toLowerCase()}/dashboard`);
-        } else {
-          // Si aucun rôle n'est trouvé, gérer l'absence de rôle
-          setError("Rôle utilisateur introuvable.");
+      if(result){
+        const { user, token, role } = result;
+        if (user && token) {
+          if (role) {
+
+            router.push(`/${role.toString().toLowerCase()}/dashboard`);
+          } else {
+            setError("Rôle utilisateur introuvable.");
+          }
         }
+      } else {
+        setError('Échec de la connexion.');
       }
     } catch (error) {
       console.error('Login failed:', error);
-      setError(error?.response?.data?.message || 'Erreur lors de la connexion');
     }
   };
 
@@ -49,7 +52,13 @@ const LoginPage = () => {
     <div className="flex items-center justify-center min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('/img/background.jpg')" }}>
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
         <div className="text-center mb-6">
-          <img src="/img/logo.png" alt="Efrei logo" className="mx-auto w-80 mb-4" />
+        <Image
+          src="/img/logo.png"
+          alt="Efrei logo"
+          className="mx-auto mb-4"
+          width={320} 
+          height={80} 
+        />
           <h1 className="text-5xl font-bold text-[#1E0E62]">Connexion</h1>
         </div>
         <form onSubmit={handleLogin} className="space-y-4">

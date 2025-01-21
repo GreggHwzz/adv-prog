@@ -28,7 +28,7 @@ export const useTeacher = (): UseTeachersReturn => {
       const response = await axios.get<Teacher[]>(`${backendUrl}/teachers`);
       setTeachers(response.data);
     } catch (err: unknown) {
-      console.log("erreur teacher", err)
+
       console.error('Error fetching teachers:', err);
       setError((err as Error).message);
     } finally {
@@ -41,7 +41,7 @@ export const useTeacher = (): UseTeachersReturn => {
     setError(null);
     try {
       const response = await axios.get<Teacher>(`${backendUrl}/teachers/${id}`);
-      console.log("Fetched teacher:", response.data); // Log pour vérifier la réponse
+
       return response.data;
     } catch (err: unknown) {
       console.error('Error fetching teacher by ID:', err);
@@ -100,7 +100,7 @@ export const useTeacher = (): UseTeachersReturn => {
       await axios.delete(`${backendUrl}/teachers/delete/${id}`);
       setTeachers((prev) => prev.filter((teacher) => teacher.id !== id));
     } catch (err: unknown) {
-      console.log('Error deleting teacher:', err);
+
       setError((err as Error).message);
     } finally {
       setLoading(false);

@@ -33,7 +33,7 @@ export const useForms = (): UseFormsReturn & { deleteForm: (formId: string) => P
 
       const response = await axios.get<Form[]>(`${backendUrl}/forms`, { params });
       setForms(response.data);
-      console.log(response.data);
+
     } catch (err: unknown) {
       console.error('Error fetching forms:', err);
       setError((err as Error).message);

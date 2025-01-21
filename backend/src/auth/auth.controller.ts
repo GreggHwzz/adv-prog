@@ -15,7 +15,6 @@ export class AuthController {
 
     try {
       const result = await this.authService.signInWithEmailAndPassword(email, password);
-      console.log('Connexion réussie avec email :', email);
       return result;
     } catch (error) {
       console.error('Erreur lors de la connexion:', error.message);
@@ -36,7 +35,6 @@ export class AuthController {
 
     try {
       const result = await this.authService.signUpWithEmailAndPassword(email, password);
-      console.log('Inscription réussie avec email :', email);
       return result;
     } catch (error) {
       console.error('Erreur lors de l\'inscription:', error.message);

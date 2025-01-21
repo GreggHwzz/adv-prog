@@ -7,7 +7,7 @@ export class EnrollmentService {
   // Récupérer toutes les associations entre les formulaires et les questions, avec des filtres optionnels
   async getAllEnrollments(filters: { studentId?: string; courseId?: string }) {
     try {
-      console.log('Attempting to fetch filtered enrollment associations from Supabase...');
+
       
       let query = supabaseClient
         .from('Enrollment')
@@ -28,7 +28,7 @@ export class EnrollmentService {
         throw new Error(`Supabase query error: ${error.message}`);
       }
 
-      console.log('Fetched filtered enrollment associations:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error fetching enrollment associations:', err);
@@ -41,8 +41,8 @@ export class EnrollmentService {
   // Mettre à jour une association entre un formulaire et une question
   async updateEnrollment(formId: string, questionId: string, updatedData: any) {
     try {
-      console.log('Received formId and questionId:', formId, questionId); 
-      console.log('Updated enrollment data:', updatedData); // Debugging
+
+
   
       const { data, error } = await supabaseClient
         .from('Enrollments')
@@ -55,7 +55,7 @@ export class EnrollmentService {
         throw new Error('Failed to update enrollment association');
       }
   
-      console.log('Updated enrollment association data:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error updating enrollment association:', err);
@@ -66,7 +66,7 @@ export class EnrollmentService {
   // Méthode pour inscrire un étudiant à un cours
   async enrollStudentToCourse(studentId: string, courseId: string) {
     try {
-      console.log('Attempting to enroll student to course...', { studentId, courseId });
+
 
       
       const { data: studentData, error: studentError } = await supabaseClient
@@ -98,7 +98,7 @@ export class EnrollmentService {
         throw new Error('Erreur lors de l\'inscription');
       }
 
-      console.log('Inscription réussie:', data);
+
       return data;
     } catch (err) {
       console.error('Erreur interne lors de l\'inscription de l\'étudiant:', err);

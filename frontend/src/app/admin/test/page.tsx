@@ -53,7 +53,6 @@ const FormsPage: React.FC = () => {
 
       if (createdForm) {
         alert('Formulaire créé avec succès !');
-        console.log('Formulaire créé :', createdForm);
       }
     } catch (err) {
       console.error('Erreur lors de la création du formulaire :', err);
@@ -71,7 +70,7 @@ const FormsPage: React.FC = () => {
 
       if (updatedForm) {
         alert('Formulaire mis à jour avec succès !');
-        console.log('Formulaire mis à jour :', updatedForm);
+
       }
     } catch (err) {
       console.error('Erreur lors de la mise à jour du formulaire :', err);

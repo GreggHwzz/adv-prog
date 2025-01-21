@@ -16,10 +16,10 @@ const FormQuestionsPage = ({ params }: { params: Promise<{ formId: string }> }) 
   // Résoudre le `formId` depuis `params`
   useEffect(() => {
     const resolveParams = async () => {
-      console.log('Resolving params...');
+
       try {
         const resolvedParams = await params;
-        console.log('Resolved params:', resolvedParams);
+
         setFormId(resolvedParams.formId);  // Mettre à jour l'état formId
       } catch (err) {
         console.error('Error resolving params:', err);
@@ -34,17 +34,17 @@ const FormQuestionsPage = ({ params }: { params: Promise<{ formId: string }> }) 
     const loadQuestions = async () => {
       if (!formId) return;
 
-      console.log('Form ID is set to:', formId);
+
       setLoading(true);
       setError(null);
 
       try {
-        console.log('Fetching questions for form ID:', formId);
+
         const formQuestions = await fetchQuestionsByFormId(formId);
-        console.log('Fetched form questions:', formQuestions);
+
 
         if (formQuestions && formQuestions.length > 0) {
-          console.log('Form questions found, enriching...');
+
 
           // Enrichir les questions avec leur contenu
           const enrichedQuestions = await Promise.all(
@@ -57,7 +57,7 @@ const FormQuestionsPage = ({ params }: { params: Promise<{ formId: string }> }) 
             })
           );
 
-          console.log('Enriched questions:', enrichedQuestions);
+
 
           setCombinedQuestions(enrichedQuestions);  // Mettre à jour l'état des questions
           setIsEnriched(true);  // Marquer l'enrichissement comme terminé
@@ -80,7 +80,7 @@ const FormQuestionsPage = ({ params }: { params: Promise<{ formId: string }> }) 
 
   // Affichage des états de chargement et d'erreur
   if (loading) {
-    console.log('Loading questions...');
+
     return <p>Loading questions...</p>;
   }
 
@@ -89,7 +89,7 @@ const FormQuestionsPage = ({ params }: { params: Promise<{ formId: string }> }) 
     return <p>{error}</p>;
   }
 
-  console.log('Rendering questions:', combinedQuestions);
+
 
   return (
     <div>

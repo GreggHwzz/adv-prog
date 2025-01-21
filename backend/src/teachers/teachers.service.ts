@@ -5,7 +5,7 @@ import { supabaseClient } from '../config/supabase';
 export class TeachersService {
   async getAllTeachers() {
     try {
-      console.log('Attempting to fetch all teachers from Supabase...');
+
       
       const { data, error } = await supabaseClient
         .from('Teacher')
@@ -15,7 +15,7 @@ export class TeachersService {
         console.error('Supabase query error:', error);
         throw new Error(`Supabase query error: ${error.message}`);
       }
-      console.log('Fetched all teachers:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error fetching teachers:', err);
@@ -25,7 +25,7 @@ export class TeachersService {
 
   async getTeacherById(filters: { id: string }) {
     try {
-      console.log('Attempting to fetch specific teacher from Supabase...');
+
       
       const { data, error } = await supabaseClient
         .from('Teacher')
@@ -37,7 +37,7 @@ export class TeachersService {
         console.error('Supabase query error:', error);
         throw new Error(`Supabase query error: ${error.message}`);
       }
-      console.log('Fetched specific teacher:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error fetching teacher:', err);
@@ -46,7 +46,7 @@ export class TeachersService {
   }
   
   async createTeacher(teacher: any) {
-    console.log('Received teacher data:', teacher);
+
   
     const { fname, lname, email, password, userRole, course } = teacher;
   
@@ -70,7 +70,7 @@ export class TeachersService {
       .insert([{ fname, lname, email, course, id: user.user.id }]);
   
     if (teacherError) {
-      console.log("voici l'erreur", teacherError)
+
       throw new Error('Erreur lors de l\'insertion dans la table Teacher');
     }
   
@@ -78,7 +78,7 @@ export class TeachersService {
   }
 
   async deleteTeacher(teacherId: string) {
-    console.log('Received teacher id:', teacherId); 
+
   
     const { data, error } = await supabaseClient
       .from('Teacher')
@@ -90,14 +90,14 @@ export class TeachersService {
       throw new Error('Failed to delete teacher');
     }
   
-    console.log('Deleted teacher data:', data);
+
     return data;
   }
 
   async updateTeacher(teacherId: string, updatedData: any) {
     try {
-      console.log('Received teacher ID:', teacherId); 
-      console.log('Updated teacher data:', updatedData); // Debugging
+
+
   
       const { data, error } = await supabaseClient
         .from('Teacher')
@@ -109,7 +109,7 @@ export class TeachersService {
         throw new Error('Failed to update teacher');
       }
   
-      console.log('Updated teacher data:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error updating teacher:', err);

@@ -18,6 +18,6 @@ async function bootstrap() {
 
   // Démarrer l'application NestJS sur port 3500
   await app.listen(3500);
-  console.log('Backend is running on http://localhost:3500');
+
 }
 bootstrap();

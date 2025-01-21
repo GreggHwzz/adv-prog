@@ -5,7 +5,7 @@ import { supabaseClient } from '../config/supabase';
 export class AdminsService {
   async getAllAdmins() {
     try {
-      console.log('Attempting to fetch all admins from Supabase...');
+
       
       const { data, error } = await supabaseClient
         .from('Admin')
@@ -15,7 +15,6 @@ export class AdminsService {
         console.error('Supabase query error:', error);
         throw new Error(`Supabase query error: ${error.message}`);
       }
-      console.log('Fetched all admins:', data);
       return data;
     } catch (err) {
       console.error('Internal error fetching admins:', err);
@@ -25,7 +24,7 @@ export class AdminsService {
 
   async getAdminById(filters: { id: string }) {
     try {
-      console.log('Attempting to fetch specific admin from Supabase...');
+
       
       const { data, error } = await supabaseClient
         .from('Admin')
@@ -37,7 +36,6 @@ export class AdminsService {
         console.error('Supabase query error:', error);
         throw new Error(`Supabase query error: ${error.message}`);
       }
-      console.log('Fetched specific admin:', data);
       return data;
     } catch (err) {
       console.error('Internal error fetching admin:', err);
@@ -46,7 +44,6 @@ export class AdminsService {
   }
   
   async createAdmin(admin: any) {
-    console.log('Received admin data:', admin); 
   
     const { fname, lname, email, password, userRole } = admin;
   
@@ -71,7 +68,6 @@ export class AdminsService {
 
     if (adminError) {
       await supabaseClient.auth.admin.deleteUser(userResponse.user.id); // pour la précision ici je delete le user si l'insertion se passe mal
-      console.log("Erreur a l'insertion -> ", adminError)
       throw new Error('Erreur lors de l\'insertion dans la table Student');
     }
 
@@ -79,7 +75,7 @@ export class AdminsService {
   }
 
   async deleteAdmin(admin: any) {
-    console.log('Received admin id:', admin); 
+
   
     const { data, error } = await supabaseClient
       .from('Admin')
@@ -91,14 +87,14 @@ export class AdminsService {
       throw new Error('Failed to delete admin');
     }
   
-    console.log('Deleted admin data:', data);
+
     return data;
   }
 
   async updateAdmin(adminId: string, updatedData: any) {
     try {
-      console.log('Received admin ID:', adminId); 
-      console.log('Updated admin data:', updatedData); // Debugging
+
+
   
       const { data, error } = await supabaseClient
         .from('Admin')
@@ -110,7 +106,7 @@ export class AdminsService {
         throw new Error('Failed to update admin');
       }
   
-      console.log('Updated admin data:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error updating admin:', err);

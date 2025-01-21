@@ -5,7 +5,7 @@ import { supabaseClient } from '../config/supabase';
 export class ProfilesService {
   async getAllProfiles(filters: {role?: string, userId?: string }) {
   try {
-    console.log('Attempting to fetch filtered profiles from Supabase...');
+
     
     let query = supabaseClient
       .from('Profiles')
@@ -25,7 +25,7 @@ export class ProfilesService {
       throw new Error(`Supabase query error: ${error.message}`);
     }
 
-    console.log('Fetched filtered profiles:', data);
+
     return data;
   } catch (err) {
     console.error('Internal error fetching profiles:', err);
@@ -35,7 +35,7 @@ export class ProfilesService {
 
 async getProfileById(filters: { id: string }) {
   try {
-    console.log('Attempting to fetch specific profile from Supabase...');
+
     
     const { data, error } = await supabaseClient
       .from('Profiles')
@@ -46,7 +46,7 @@ async getProfileById(filters: { id: string }) {
       console.error('Supabase query error:', error);
       throw new Error(`Supabase query error: ${error.message}`);
     }
-    console.log('Fetched specific profile:', data);
+
     return data;
   } catch (err) {
     console.error('Internal error fetching profile:', err);
@@ -55,7 +55,7 @@ async getProfileById(filters: { id: string }) {
 }
 
   async createProfile(profile: any) {
-    console.log('Received profile data:', profile); 
+
   
     const { data, error } = await supabaseClient
       .from('Profiles')
@@ -70,7 +70,7 @@ async getProfileById(filters: { id: string }) {
     return data;
   }
   async deleteProfile(profileId: string) {
-    console.log('Received profile id:', profileId); 
+
   
     const { data, error } = await supabaseClient
       .from('Profiles')
@@ -82,14 +82,14 @@ async getProfileById(filters: { id: string }) {
       throw new Error('Failed to delete profile');
     }
   
-    console.log('Deleted profile data:', data);
+
     return data;
   }
 
   async updateProfile(profileId: string, updatedData: any) {
     try {
-      console.log('Received profile ID:', profileId); 
-      console.log('Updated profile data:', updatedData); // Debugging
+
+
   
       const { data, error } = await supabaseClient
         .from('Profiles')
@@ -101,7 +101,7 @@ async getProfileById(filters: { id: string }) {
         throw new Error('Failed to update profile');
       }
   
-      console.log('Updated profile data:', data);
+
       return data;
     } catch (err) {
       console.error('Internal error updating profile:', err);

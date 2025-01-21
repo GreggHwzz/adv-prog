@@ -70,7 +70,7 @@ const FormQuestionsPage = ({ params: paramsPromise }: { params: Promise<{ formId
           setError("No questions found.");
         }
       } catch (err: unknown) {
-        console.log("Erreur de chargement", err);
+
         setError("Failed to load questions. Please try again.");
       } finally {
         setLoading(false);
@@ -96,7 +96,7 @@ const FormQuestionsPage = ({ params: paramsPromise }: { params: Promise<{ formId
             setReviews(updatedReviews);
           }
         } catch (err) {
-          console.log("Erreur de chargement de students responses", err);
+
           toast.error("Echec de chargement des réponses !");
           setError("Failed to load student responses.");
         }
@@ -159,7 +159,7 @@ const FormQuestionsPage = ({ params: paramsPromise }: { params: Promise<{ formId
         studentFormResponse
       );
 
-      console.log('Réponse soumise avec succès', response.data);
+
 
       setConfirmationMessage('Your reviews have been submitted successfully!');
       setSubmitError(null); 
@@ -169,7 +169,7 @@ const FormQuestionsPage = ({ params: paramsPromise }: { params: Promise<{ formId
         router.push('/student/dashboard');
       }, 3000);
     } catch (err) {
-      console.log("error", err)
+
       setSubmitError('Error submitting reviews. Please try again.');
     }
   };
@@ -188,6 +188,7 @@ const FormQuestionsPage = ({ params: paramsPromise }: { params: Promise<{ formId
       <Typography variant="h4" gutterBottom>Form Questions</Typography>
       {confirmationMessage && (
         <Snackbar
+          color='green'
           open={true}
           message={confirmationMessage}
           autoHideDuration={3000}

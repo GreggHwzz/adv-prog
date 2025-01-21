@@ -34,7 +34,7 @@ export const useStudent = (): UseStudentsReturn => {
       const response = await axios.get<Student[]>(`${backendUrl}/students`);
       setStudents(response.data);
     } catch (err: unknown) {
-      console.log("erreur student", err)
+
       console.error("Error fetching students:", err);
       setError((err as Error).message);
     } finally {
@@ -47,7 +47,7 @@ export const useStudent = (): UseStudentsReturn => {
     setError(null);
     try {
       const response = await axios.get<Student>(`${backendUrl}/students/${id}`);
-      console.log("Fetched student:", response.data); // Log pour vérifier la réponse
+
       return response.data;
     } catch (err: unknown) {
       console.error("Error fetching student by ID:", err);
@@ -73,7 +73,7 @@ export const useStudent = (): UseStudentsReturn => {
       setStudents((prev) => [...prev, response.data]);
       return response.data;
     } catch (err: unknown) {
-      console.log("Error creating student:", err);
+
       setError((err as Error).message);
     } finally {
       setLoading(false);

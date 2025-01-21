@@ -45,7 +45,7 @@ export const useAdmin = (): UseAdminsReturn => {
     setError(null);
     try {
       const response = await axios.get<Admin>(`${backendUrl}/admins/${id}`);
-      console.log("Fetched admin:", response.data);
+
       return response.data;
     } catch (err: unknown) {
       console.error("Error fetching admin by ID:", err);

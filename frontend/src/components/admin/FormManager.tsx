@@ -57,7 +57,6 @@ const FormManager: React.FC<FormManagerProps> = ({ onFormCreated }) => {
 
       if (createdForm) {
         alert('Formulaire créé avec succès !');
-        console.log('Formulaire créé :', createdForm);
         if (onFormCreated) onFormCreated(createdForm);
       }
     } catch (err) {
